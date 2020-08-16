@@ -1,0 +1,35 @@
+newblueprint<blueprint>
+{
+    area_0000<area>(-39,8)
+    {
+        contour<contour>(4,-15,-15,15,-15,15,15,-15,15)
+        {
+            boundary_0000<contoursegment>(1,0.5,4)
+        }
+    }
+    area_0001<area>(-7,8)
+    {
+        contour<contour>(4,-15,-15,15,-15,15,15,-15,15)
+        {
+            boundary_0000<contoursegment>(3,0.5,4)
+            boundary_0001<contoursegment>(1,0.5,4)
+        }
+    }
+    area_0002<area>(25,8)
+    {
+        contour<contour>(4,-15,-15,15,-15,15,15,-15,15)
+        {
+            boundary_0000<contoursegment>(3,0.5,4)
+        }
+    }
+    connection_0003<connection>
+    {
+        source<reference>(...area_0000.contour.boundary_0000)
+        target<reference>(...area_0001.contour.boundary_0000)
+    }
+    connection_0004<connection>
+    {
+        source<reference>(...area_0001.contour.boundary_0001)
+        target<reference>(...area_0002.contour.boundary_0000)
+    }
+}

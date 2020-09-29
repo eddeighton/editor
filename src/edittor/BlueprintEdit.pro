@@ -25,38 +25,6 @@ SOURCES += main.cpp\
     mainwidget.cpp \
     geometryengine.cpp
     
-################################################
-# agg stuff
-AGG_PATH = W:/root/thirdparty_x64/agg/src/agg-2.4/
-INCLUDEPATH += $$AGG_PATH/include
-    
-SOURCES += $$AGG_PATH/src/agg_arc.cpp \
-    $$AGG_PATH/src/agg_arrowhead.cpp \
-    $$AGG_PATH/src/agg_bezier_arc.cpp \
-    $$AGG_PATH/src/agg_bspline.cpp \
-    $$AGG_PATH/src/agg_curves.cpp \
-    $$AGG_PATH/src/agg_embedded_raster_fonts.cpp \
-    $$AGG_PATH/src/agg_gsv_text.cpp \
-    $$AGG_PATH/src/agg_image_filters.cpp \
-    $$AGG_PATH/src/agg_line_aa_basics.cpp \
-    $$AGG_PATH/src/agg_line_profile_aa.cpp \
-    $$AGG_PATH/src/agg_rounded_rect.cpp \
-    $$AGG_PATH/src/agg_sqrt_tables.cpp \
-    $$AGG_PATH/src/agg_trans_affine.cpp \
-    $$AGG_PATH/src/agg_trans_double_path.cpp \
-    $$AGG_PATH/src/agg_trans_single_path.cpp \
-    $$AGG_PATH/src/agg_trans_warp_magnifier.cpp \
-    $$AGG_PATH/src/agg_vcgen_bspline.cpp \
-    $$AGG_PATH/src/agg_vcgen_contour.cpp \
-    $$AGG_PATH/src/agg_vcgen_dash.cpp \
-    $$AGG_PATH/src/agg_vcgen_markers_term.cpp \
-    $$AGG_PATH/src/agg_vcgen_smooth_poly1.cpp \
-    $$AGG_PATH/src/agg_vcgen_stroke.cpp \
-    $$AGG_PATH/src/agg_vpgen_clip_polygon.cpp \
-    $$AGG_PATH/src/agg_vpgen_clip_polyline.cpp \
-    $$AGG_PATH/src/agg_vpgen_segmentator.cpp
-
-
 HEADERS  += mainwindow.h \
     blueprintscene.h \
     blueprintview.h \

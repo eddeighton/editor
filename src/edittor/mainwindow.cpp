@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_pToolActionGroup = new QActionGroup( this );
+    m_pModeActionGroup = new QActionGroup( this );
 
     ui->actionNew->setIcon( QIcon( ":/art/file.png" ) );
     ui->actionLoad->setIcon( QIcon( ":/art/folderOpen.png" ) );
@@ -40,6 +41,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSelect->setCheckable( true );
     ui->actionPen->setIcon( QIcon( ":/art/pen_blue.png" ) );
     ui->actionPen->setCheckable( true );
+    
+    ui->actionArea->setCheckable( true );
+    ui->actionContour->setCheckable( true );
+    ui->actionConnection->setCheckable( true );
+    
+    m_pModeActionGroup->addAction( ui->actionArea );
+    m_pModeActionGroup->addAction( ui->actionContour );
+    m_pModeActionGroup->addAction( ui->actionConnection );
+    m_pModeActionGroup->setExclusive( true );
 
     ui->actionSelect->setData( -2 );
     ui->actionPen->setData( -1 );
@@ -83,10 +93,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addWidget( pQuantiseComboBox );
 
     ui->mainToolBar->addSeparator();
-
     ui->mainToolBar->addAction( ui->actionSelect );
     ui->mainToolBar->addAction( ui->actionPen );
 
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction( ui->actionArea );
+    ui->mainToolBar->addAction( ui->actionContour );
+    ui->mainToolBar->addAction( ui->actionConnection );
+    
     ui->menuView->addAction( ui->dockProperties->toggleViewAction() );
     ui->dockProperties->toggleViewAction()->setShortcut( Qt::Key_F1 );
     ui->menuView->addAction( ui->dockToolbox->toggleViewAction() );
@@ -107,6 +121,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSelect->setShortcut( Qt::Key_1 );
     QObject::connect( ui->actionPen,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectTool_Pen() ));
     ui->actionPen->setShortcut( Qt::Key_2 );
+    
+    QObject::connect( ui->actionArea,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Area() ));
+    ui->actionArea->setShortcut( Qt::Key_3 );
+    QObject::connect( ui->actionContour,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Contour() ));
+    ui->actionContour->setShortcut( Qt::Key_4 );
+    QObject::connect( ui->actionConnection,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Connection() ));
+    ui->actionConnection->setShortcut( Qt::Key_5 );
     
     QObject::connect( ui->actionCut,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Cut() ));
     ui->actionCut->setShortcut( QKeySequence( "Ctrl+x" ) );
@@ -177,6 +198,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     
     ui->actionSelect->trigger();
+    ui->actionArea->trigger();
 
     ui->toolBox->setToolbox( m_pToolbox );
 
@@ -205,14 +227,19 @@ void MainWindow::OnBlueprintSelected( BlueprintMsg msg )
     qDebug() << "MainWindow Recieved new blueprint: " << msg.pNode->getName().c_str();
 }
 
-void MainWindow::OnEditContext( BlueprintContext msg )
+void MainWindow::OnEditContext( BlueprintContext /*msg*/ )
 {
+    if( QAction* pCurrentAction = m_pToolActionGroup->checkedAction() )
+    {
+        pCurrentAction->trigger();
+    }
+    /*
     int iCurrentTool = -3;
 
     if( QAction* pCurrentAction = m_pToolActionGroup->checkedAction() )
         iCurrentTool = pCurrentAction->data().toInt();
-
-    for( std::vector< QAction* >::const_iterator
+*/
+    /*for( std::vector< QAction* >::const_iterator
          i = m_contextActions.begin(),
          iEnd = m_contextActions.end(); i!=iEnd; ++i )
     {
@@ -222,12 +249,12 @@ void MainWindow::OnEditContext( BlueprintContext msg )
         m_pToolActionGroup->removeAction( pAction );
         delete pAction;
     }
-    m_contextActions.clear();
+    m_contextActions.clear();*/
 
     qDebug() << "MainWindow::OnEditContext: ";
 
     //setup the context tools?
-    Blueprint::CmdTarget::CmdInfo::List cmds;
+    /*Blueprint::CmdTarget::CmdInfo::List cmds;
     msg.pContext->getCmds( cmds );
 
     Blueprint::CmdTarget::ToolInfo::List tools;
@@ -246,9 +273,9 @@ void MainWindow::OnEditContext( BlueprintContext msg )
             std::function< void() >( std::bind( &BlueprintView::OnSelectTool_Context, ui->graphicsView, i->uiToolID ) )  );
 
         ui->mainToolBar->addAction( pAction );
-    }
+    }*/
 
-    if( iCurrentTool >= 0 && iCurrentTool < m_contextActions.size() )
+    /*if( iCurrentTool >= 0 && iCurrentTool < m_contextActions.size() )
     {
         m_contextActions[ iCurrentTool ]->trigger();
     }
@@ -260,7 +287,7 @@ void MainWindow::OnEditContext( BlueprintContext msg )
             case -2:    ui->actionSelect->trigger();    break;
             case -1:    ui->actionPen->trigger();       break;
         }
-    }
+    }*/
 }
 
 

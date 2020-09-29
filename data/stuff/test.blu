@@ -1,0 +1,43 @@
+newblueprint<blueprint>
+{
+    area_0000<area>(-51,21)
+    {
+        area_0001<area>(-21,21)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        area_0003<area>(-21,1)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        area_0005<area>(-1,21)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        contour<contour>(4,-15,-15,15,-15,15,15,-15,15)
+        area_0007<area>(-9,1)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+    }
+    area_0001<area>(-18,21)
+    {
+        area_0001<area>(-20,20)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        area_0003<area>(-20,3)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        area_0005<area>(-2,20)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+        contour<contour>(4,-15,-15,15,-15,15,15,-15,15)
+        area_0007<area>(-11,3)
+        {
+            contour<contour>(4,7,-15,15,-15,15,-7,7,-7)
+        }
+    }
+}

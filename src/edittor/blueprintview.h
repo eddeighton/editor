@@ -88,6 +88,7 @@ public:
     void CalculateOversizedSceneRect();
     void CalculateRulerItems();
     QVector2D BlueprintView::calculateQuantisation() const;
+    Blueprint::IEditContext::ToolMode getMode() const { return m_toolMode; }
 
 signals:
     void OnBlueprintModified();
@@ -122,7 +123,11 @@ public slots:
     //tools
     void OnSelectTool_Selector();
     void OnSelectTool_Pen();
-    void OnSelectTool_Context( unsigned int uiToolID );
+    
+    //modes
+    void OnSelectMode_Area();
+    void OnSelectMode_Contour();
+    void OnSelectMode_Connection();
 
     void OnSetQuantise( int iQuantisation );
 protected:
@@ -152,9 +157,10 @@ private:
 
     SelectTool m_selectTool;
     PenTool m_penTool;
-    ContextTool m_contextTool;
+    //ContextTool m_contextTool;
     Tool* m_pActiveTool;
     Blueprint::Toolbox::Ptr m_pToolBox;
+    Blueprint::IEditContext::ToolMode m_toolMode = Blueprint::IEditContext::eArea;
 
     typedef std::vector< QGraphicsSimpleTextItem* > TextItemVector;
     TextItemVector m_rulerVertItems, m_rulerHoriItems;

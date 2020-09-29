@@ -67,7 +67,7 @@ public:
         TreeItem* getChildAt( int iRow ) const { return ( iRow < static_cast< int >( m_children.size() ) ) ? m_children[ iRow ] : 0u; }
         TreeItem* getParent() const { return m_pParent; }
         int columnCount() const { return 2; }
-        int rowCount() const { return m_children.size(); }
+        int rowCount() const { return static_cast< int >( m_children.size() ); }
         int getRowNumber() const
         {
             if( m_pParent )

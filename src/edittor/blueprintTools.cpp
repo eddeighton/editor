@@ -209,8 +209,11 @@ void SelectTool::mousePressEvent(QMouseEvent *event)
     {
         m_view.setCursor( Qt::ArrowCursor );
         m_toolMode = eSelectNodes;
-        m_pSelection.reset( new Selection_Path( m_view,
-               Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(), m_view.mapToScene( event->pos() ) ) );
+        m_pSelection.reset( new Selection_Path( 
+            m_view,
+            Selection::getSelectionMode( event ), 
+            m_view.m_v2ZoomLevel.y(), 
+            m_view.mapToScene( event->pos() ) ) );
     }
     else if( event->button() == Qt::LeftButton )
     {
@@ -235,7 +238,7 @@ void SelectTool::mousePressEvent(QMouseEvent *event)
             }
             if( !m_pInteraction )
             {
-                m_pInteraction = m_view.m_pActiveContext->interaction_start( pos.x(), pos.y(), q.x(), q.y(), pGlyph, currentSelection );
+                m_pInteraction = m_view.m_pActiveContext->interaction_start( m_view.getMode(), pos.x(), pos.y(), q.x(), q.y(), pGlyph, currentSelection );
                 m_toolMode = eCmd;
                 m_view.setCursor( Qt::SizeAllCursor );
             }
@@ -244,8 +247,11 @@ void SelectTool::mousePressEvent(QMouseEvent *event)
         {
             m_view.setCursor( Qt::ArrowCursor );
             m_toolMode = eSelectNodes;
-                m_pSelection.reset( new Selection_Rect( m_view, Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(),
-                   m_view.mapToScene( event->pos() ) ) );
+            m_pSelection.reset( new Selection_Rect( 
+                m_view, 
+                Selection::getSelectionMode( event ), 
+                m_view.m_v2ZoomLevel.y(),
+                m_view.mapToScene( event->pos() ) ) );
         }
     }
 }
@@ -330,7 +336,7 @@ void PenTool::mousePressEvent(QMouseEvent *event)
             }
             if( !m_pInteraction )
             {
-                m_pInteraction = m_view.m_pActiveContext->interaction_start( pos.x(), pos.y(), q.x(), q.y(), pGlyph, selection );
+                m_pInteraction = m_view.m_pActiveContext->interaction_start( m_view.getMode(), pos.x(), pos.y(), q.x(), q.y(), pGlyph, selection );
                 m_toolMode = eCmd;
                 m_view.setCursor( Qt::SizeAllCursor );
             }
@@ -341,7 +347,7 @@ void PenTool::mousePressEvent(QMouseEvent *event)
             //draw new space
             m_toolMode = eDraw;
             m_view.setCursor( Qt::CrossCursor );
-            m_pInteraction = m_view.m_pActiveContext->interaction_draw( pos.x(), pos.y(), q.x(), q.y(), m_view.getCurrentPaletteItem() );
+            m_pInteraction = m_view.m_pActiveContext->interaction_draw( m_view.getMode(), pos.x(), pos.y(), q.x(), q.y(), m_view.getCurrentPaletteItem() );
 
             m_view.CalculateOversizedSceneRect();
         }
@@ -417,56 +423,56 @@ void PenTool::reset()
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-ContextTool::ContextTool( BlueprintView& view )
-    :   PenTool( view )
-{
-}
-
-void ContextTool::mousePressEvent(QMouseEvent *event)
-{
-    ASSERT( m_view.m_pActiveContext );
-    
-    const QVector2D q = m_view.calculateQuantisation();
-    if( event->button() == Qt::LeftButton )
-    {
-        const QPointF pos = m_view.mapToActiveContext( m_view.mapToScene( event->pos() ) );
-        if( Blueprint::IGlyph* pGlyph = m_view.findSelectableTopmostGlyph( event->pos() ) )
-        {
-            SelectionSet selection;
-            if( event->modifiers() & Qt::ControlModifier )
-            {
-                if( m_pInteraction = m_view.m_pActiveContext->cmd_paste( pGlyph, pos.x(), pos.y(), q.x(), q.y() ) )
-                {
-                    m_toolMode = eDragCopy;
-                    m_view.setCursor( Qt::DragCopyCursor );
-                }
-            }
-            if( !m_pInteraction )
-            {
-                m_pInteraction = m_view.m_pActiveContext->interaction_tool( pos.x(), pos.y(), q.x(), q.y(), pGlyph, selection, m_toolID );
-                m_toolMode = eCmd;
-                m_view.setCursor( Qt::SizeAllCursor );
-            }
-            m_view.CalculateOversizedSceneRect();
-        }
-        else
-        {
-            //draw new space
-            m_toolMode = eDraw;
-            m_view.setCursor( Qt::CrossCursor );
-            m_pInteraction = m_view.m_pActiveContext->interaction_tool_draw( pos.x(), pos.y(), q.x(), q.y(), m_view.getCurrentPaletteItem(), m_toolID );
-
-            m_view.CalculateOversizedSceneRect();
-        }
-    }
-    else if( event->button() == Qt::RightButton )
-    {
-        m_view.setCursor( Qt::ArrowCursor );
-        m_toolMode = eDelete;
-        m_pSelection.reset( new Selection_Rect( m_view, Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(),
-            m_view.mapToScene( event->pos() ), QColor( 200, 0, 0, 100) ) );
-    }
-}
+//ContextTool::ContextTool( BlueprintView& view )
+//    :   PenTool( view )
+//{
+//}
+//
+//void ContextTool::mousePressEvent(QMouseEvent *event)
+//{
+//    ASSERT( m_view.m_pActiveContext );
+//    
+//    const QVector2D q = m_view.calculateQuantisation();
+//    if( event->button() == Qt::LeftButton )
+//    {
+//        const QPointF pos = m_view.mapToActiveContext( m_view.mapToScene( event->pos() ) );
+//        if( Blueprint::IGlyph* pGlyph = m_view.findSelectableTopmostGlyph( event->pos() ) )
+//        {
+//            SelectionSet selection;
+//            if( event->modifiers() & Qt::ControlModifier )
+//            {
+//                if( m_pInteraction = m_view.m_pActiveContext->cmd_paste( pGlyph, pos.x(), pos.y(), q.x(), q.y() ) )
+//                {
+//                    m_toolMode = eDragCopy;
+//                    m_view.setCursor( Qt::DragCopyCursor );
+//                }
+//            }
+//            if( !m_pInteraction )
+//            {
+//                m_pInteraction = m_view.m_pActiveContext->interaction_tool( pos.x(), pos.y(), q.x(), q.y(), pGlyph, selection, m_toolID );
+//                m_toolMode = eCmd;
+//                m_view.setCursor( Qt::SizeAllCursor );
+//            }
+//            m_view.CalculateOversizedSceneRect();
+//        }
+//        else
+//        {
+//            //draw new space
+//            m_toolMode = eDraw;
+//            m_view.setCursor( Qt::CrossCursor );
+//            m_pInteraction = m_view.m_pActiveContext->interaction_tool_draw( pos.x(), pos.y(), q.x(), q.y(), m_view.getCurrentPaletteItem(), m_toolID );
+//
+//            m_view.CalculateOversizedSceneRect();
+//        }
+//    }
+//    else if( event->button() == Qt::RightButton )
+//    {
+//        m_view.setCursor( Qt::ArrowCursor );
+//        m_toolMode = eDelete;
+//        m_pSelection.reset( new Selection_Rect( m_view, Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(),
+//            m_view.mapToScene( event->pos() ), QColor( 200, 0, 0, 100) ) );
+//    }
+//}
 /*
 void ContextTool::mouseHover( QMouseEvent*  )
 {

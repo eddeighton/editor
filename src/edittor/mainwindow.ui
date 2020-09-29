@@ -88,6 +88,10 @@
     <addaction name="actionSelect"/>
     <addaction name="actionPen"/>
     <addaction name="separator"/>
+    <addaction name="actionArea"/>
+    <addaction name="actionContour"/>
+    <addaction name="actionConnection"/>
+    <addaction name="separator"/>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
@@ -187,9 +191,19 @@
     <string>Pen</string>
    </property>
   </action>
-  <action name="actionErasor">
+  <action name="actionArea">
    <property name="text">
-    <string>Erasor</string>
+    <string>Area</string>
+   </property>
+  </action>
+  <action name="actionContour">
+   <property name="text">
+    <string>Contour</string>
+   </property>
+  </action>
+  <action name="actionConnection">
+   <property name="text">
+    <string>Connection</string>
    </property>
   </action>
   <action name="action">

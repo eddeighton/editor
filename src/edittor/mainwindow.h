@@ -37,8 +37,9 @@ private:
     BlueprintItemModel* m_pBlueprintItemModel;
     BlueprintSelectionModel* m_pBlueprintSelectionModel;
 
-    std::vector< QAction* > m_contextActions;
+    //std::vector< QAction* > m_contextActions;
     QActionGroup* m_pToolActionGroup;
+    QActionGroup* m_pModeActionGroup;
 
     Blueprint::Toolbox::Ptr m_pToolbox;
 

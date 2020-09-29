@@ -1,0 +1,23 @@
+
+background
+{
+    colour( 255, 255, 255, 255 )
+    step( 4 )
+    text
+    {
+        colour( 0, 0, 0, 255 )
+    }
+    lines
+    {
+        width( 0.5 )
+        main
+        {
+            //colour( 175, 175, 175, 255 )
+            colour( 100, 100, 100, 255 )
+        }
+        other
+        {
+            colour( 225, 225, 225, 255 )
+        }
+    }
+}

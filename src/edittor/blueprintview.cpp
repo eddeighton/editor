@@ -6,6 +6,7 @@
 #include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QProcessEnvironment>
 
 #include <cmath>
 #include <sstream>
@@ -22,6 +23,18 @@
 
 #include "preview.h"
 
+
+namespace Ed
+{
+    inline IShorthandStream& operator>>( IShorthandStream& is, QColor& data )
+    {
+        int red,green,blue,alpha;
+        is >> red >> green >> blue >> alpha;
+        data = QColor( red,green,blue,alpha );
+        return is;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 BlueprintView::BlueprintView(QWidget *parent) :
@@ -30,7 +43,7 @@ BlueprintView::BlueprintView(QWidget *parent) :
     m_interactionMode( eNone ),
     m_selectTool( *this ),
     m_penTool( *this ),
-    m_contextTool( *this ),
+    //m_contextTool( *this ),
     m_pActiveTool( &m_selectTool ),
     m_iQuantisation( 16 )
 {
@@ -69,9 +82,11 @@ void BlueprintView::OnNewBlueprint()
 void BlueprintView::OnLoadBlueprint()
 {
     Blueprint::Site::Ptr pNewBlueprint;
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
     QString strFilePath =
             QFileDialog::getOpenFileName( this,
-                tr( "Open Blueprint" ), "C:/WORKSPACE/Blueprint/data",
+                tr( "Open Blueprint" ), 
+                environment.value( "BLUEPRINT_TOOLBOX_PATH" ),
                 tr( "Blueprint Files (*.blu)" ) );
     if( !strFilePath.isEmpty() )
     {
@@ -209,7 +224,7 @@ void BlueprintView::OnCmd_SelectAll()
         {
             if( Selectable* pSelectable = Selection::glyphToSelectable( i->second ) )
             {
-                if( pSelectable->isImage() && m_pActiveContext->canEdit( i->second, m_pActiveTool->getToolType() ) )
+                if( pSelectable->isImage() && m_pActiveContext->canEdit( i->second, m_pActiveTool->getToolType(), m_toolMode ) )
                     selection.insert( i->second );
             }
         }
@@ -227,7 +242,7 @@ void BlueprintView::OnCmd_ZoomToAll()
     for( ItemMap::const_iterator i = m_itemMap.begin(),
          iEnd = m_itemMap.end(); i!=iEnd; ++i )
     {
-        if( !m_pActiveContext || m_pActiveContext->canEdit( i->second, m_pActiveTool->getToolType() ) )
+        if( !m_pActiveContext || m_pActiveContext->canEdit( i->second, m_pActiveTool->getToolType(), m_toolMode ) )
             rect = rect.united( i->first->sceneBoundingRect() );
     }
     fitInView( rect, Qt::KeepAspectRatio );
@@ -272,6 +287,24 @@ void BlueprintView::OnSelectTool_Pen()
     m_pActiveTool = &m_penTool;
 }
 
+void BlueprintView::OnSelectMode_Area()
+{
+    ASSERT( m_pActiveTool );
+    m_toolMode = Blueprint::IEditContext::eArea;
+}
+
+void BlueprintView::OnSelectMode_Contour()
+{
+    ASSERT( m_pActiveTool );
+    m_toolMode = Blueprint::IEditContext::eContour;
+}
+
+void BlueprintView::OnSelectMode_Connection()
+{
+    ASSERT( m_pActiveTool );
+    m_toolMode = Blueprint::IEditContext::eConnection;
+}
+/*
 void BlueprintView::OnSelectTool_Context( unsigned int uiToolID )
 {
     ASSERT( m_pActiveTool );
@@ -281,7 +314,7 @@ void BlueprintView::OnSelectTool_Context( unsigned int uiToolID )
     m_contextTool.setToolID( uiToolID );
     m_pActiveTool = &m_contextTool;
 }
-
+*/
 void BlueprintView::OnSetQuantise( int iQuantisation )
 {
     switch( iQuantisation )
@@ -444,14 +477,14 @@ SelectionSet BlueprintView::getSelectedByRect( const QRectF& rect ) const
     {
         if( Blueprint::IGlyph* pTest = findGlyph( *i ) )
         {
-            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType() ) )
+            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType(), m_toolMode ) )
             {
                 if( Selectable* pSelectable = Selection::glyphToSelectable( pTest ) )
                 {
-                    const bool bIsCustomTool = m_pActiveTool->getToolType() != Blueprint::IEditContext::eSelect && 
-                        m_pActiveTool->getToolType() != Blueprint::IEditContext::eDraw;
-                    if( ( !bIsCustomTool && pSelectable->isImage() ) || 
-                        ( bIsCustomTool && !pSelectable->isImage() ) )
+                    //const bool bIsCustomTool = m_pActiveTool->getToolType() != Blueprint::IEditContext::eSelect && 
+                    //    m_pActiveTool->getToolType() != Blueprint::IEditContext::eDraw;
+                    //if( ( !bIsCustomTool && pSelectable->isImage() ) || 
+                    //    ( bIsCustomTool && !pSelectable->isImage() ) )
                         selection.insert( pTest );
                 }
             }
@@ -470,11 +503,11 @@ SelectionSet BlueprintView::getSelectedByPath( const QPainterPath& path ) const
     {
         if( Blueprint::IGlyph* pTest = findGlyph( *i ) )
         {
-            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType() ) )
+            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType(), m_toolMode ) )
             {
                 if( Selectable* pSelectable = Selection::glyphToSelectable( pTest ) )
                 {
-                    if( !pSelectable->isImage() )
+                    //if( !pSelectable->isImage() )
                         selection.insert( pTest );
                 }
             }
@@ -535,7 +568,7 @@ Blueprint::IGlyph* BlueprintView::findSelectableTopmostGlyph( const QPointF& pos
     {
         if( Blueprint::IGlyph* pTest = findGlyph( *i ) )
         {
-            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType() ) )
+            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType(), m_toolMode ) )
             {
                 if( Selection::glyphToSelectable( pTest ) )
                 {
@@ -594,7 +627,13 @@ void BlueprintView::mouseDoubleClickEvent(QMouseEvent * event)
         }
         if( Blueprint::IEditContext* pNewContext =
                 m_pActiveContext->getNestedContext( glyphStack ) )
+        {
             SelectContext( pNewContext );
+        }
+        else if( m_pActiveContext != m_pBlueprintEdit.get() )
+        {
+            SelectContext( m_pActiveContext->getParent() );  
+        }   
     }
     else if( event->button() == Qt::RightButton )
     {
@@ -615,6 +654,18 @@ void BlueprintView::mousePressEvent(QMouseEvent *event)
         m_interactionMode = eTool;
         m_pActiveTool->mousePressEvent( event );
         OnBlueprintModified();
+        
+        if( Blueprint::Site::Ptr pInteractionSite = m_pActiveTool->GetInteractionSite() )
+        {
+            if( !m_pActiveContext->isSiteContext( pInteractionSite ) )
+            {
+                if( Blueprint::IEditContext* pNewContext =
+                        m_pActiveContext->getSiteContext( pInteractionSite ) )
+                {
+                    SelectContext( pNewContext );
+                }
+            }
+        }
     }
     else if( event->button() == Qt::MiddleButton )
     {
@@ -689,7 +740,7 @@ void BlueprintView::keyPressEvent(QKeyEvent *event)
 {
     ASSERT( m_pActiveTool );
     ASSERT( m_pActiveContext );
-    if( event->key() == Qt::Key_Space || event->key() == Qt::Key_Tab )
+    if( ( event->key() == Qt::Key_Space ) || ( event->key() == Qt::Key_Tab ) )
     {
         if( Blueprint::IEditContext* pParentContext = m_pActiveContext->getParent() )
             SelectContext( pParentContext );
@@ -758,7 +809,12 @@ void BlueprintView::CalculateRulerItems()
     const float fOffsetX = 8.0f / m_v2ZoomLevel.x();
     const float fOffsetY = 8.0f / m_v2ZoomLevel.y();
 
-    static const QColor textColor( 255,255,255 );
+    QColor textColor( 0,0,0,255 );
+    
+    if( m_pToolBox )
+    {
+        m_pToolBox->getConfigValue( ".background.text.colour", textColor );
+    }
 
     const float fQuantLeft    =   Math::quantize< float >( rect.left(),      fXStep );
     const float fQuantRight   =   Math::quantize< float >( rect.right(),     fXStep ) + fXStep;
@@ -854,41 +910,53 @@ void BlueprintView::drawBackground(QPainter *painter, const QRectF &rect)
     while( fYStep / 16.0f < ( 1 / m_v2ZoomLevel.y() ) )
         fYStep *= 2.0f;
 
-    painter->fillRect( rect, QColor( 25, 25, 75 ) );
-
-    static const QColor clr1( 100, 100, 100, 125 );
-    static const QColor clr2( 225, 225, 225, 125 );
+    QColor mainLineColour( 225, 225, 225, 125 );
+    QColor otherLineColour( 100, 100, 100, 125 );
+    QColor bkgrnd( 255, 255, 255 );
+    
+    int iMainLineStep = 4;
+    float lineWidth = 0.5f;
+    if( m_pToolBox )
+    {
+        m_pToolBox->getConfigValue( ".background.colour", bkgrnd );
+        m_pToolBox->getConfigValue( ".background.step", iMainLineStep );
+        m_pToolBox->getConfigValue( ".background.lines.width", lineWidth );
+        m_pToolBox->getConfigValue( ".background.lines.main.colour", mainLineColour );
+        m_pToolBox->getConfigValue( ".background.lines.other.colour", otherLineColour );
+    }
+    
+    painter->fillRect( rect, bkgrnd );
 
     //grid lines
     QPen oldPen = painter->pen();
     {
         QPen gridPen;
         gridPen.setStyle( Qt::DotLine );
-        gridPen.setWidth( 0.5f );
+        gridPen.setWidth( lineWidth );
         painter->setPen( gridPen );
 
-        const float fQuantLeft    =   Math::quantize< float >( rect.left(),      fXStep * 4.0f );
-        const float fQuantRight   =   Math::quantize< float >( rect.right(),     fXStep ) + fXStep * 4.0f;
-        const float fQuantTop     =   Math::quantize< float >( rect.top(),       fYStep * 4.0f );
-        const float fQuantBottom  =   Math::quantize< float >( rect.bottom(),    fYStep ) + fYStep * 4.0f;
+        const float fQuantLeft    =   Math::quantize< float >( rect.left(),      fXStep * iMainLineStep );
+        const float fQuantRight   =   Math::quantize< float >( rect.right(),     fXStep ) + fXStep * iMainLineStep;
+        const float fQuantTop     =   Math::quantize< float >( rect.top(),       fYStep * iMainLineStep );
+        const float fQuantBottom  =   Math::quantize< float >( rect.bottom(),    fYStep ) + fYStep * iMainLineStep;
 
         unsigned int uiX = 0u;
         for( float x = fQuantLeft; x <= fQuantRight; x += fXStep, ++uiX )
         {
-            if( uiX % 4 )
-                gridPen.setColor( clr1 );
+            if( uiX % iMainLineStep )
+                gridPen.setColor( otherLineColour );
             else
-                gridPen.setColor( clr2 );
+                gridPen.setColor( mainLineColour );
             painter->setPen( gridPen );
             painter->drawLine( QPoint( x, fQuantTop ), QPoint( x, fQuantBottom ) );
         }
         unsigned int uiY = 0u;
         for( float y = fQuantTop; y <= fQuantBottom; y += fYStep, ++uiY )
         {
-            if( uiY % 4 )
-                gridPen.setColor( clr1 );
+            if( uiY % iMainLineStep )
+                gridPen.setColor( otherLineColour );
             else
-                gridPen.setColor( clr2 );
+                gridPen.setColor( mainLineColour );
             painter->setPen( gridPen );
             painter->drawLine( QPoint( fQuantLeft, y ), QPoint( fQuantRight, y ) );
         }

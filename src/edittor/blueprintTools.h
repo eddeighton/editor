@@ -56,7 +56,8 @@ public:
     virtual void mouseReleaseEvent( QMouseEvent *event )=0;
     virtual void keyPressEvent( QKeyEvent *event )=0;
     virtual void reset()=0;
-    virtual unsigned int getToolType() const = 0;
+    virtual Blueprint::IEditContext::ToolType getToolType() const = 0;
+    virtual Blueprint::Site::Ptr GetInteractionSite() const = 0;
 };
 
 class Selection_Interaction
@@ -117,7 +118,11 @@ public:
     virtual void keyPressEvent( QKeyEvent *event );
     virtual void reset();
     
-    virtual unsigned int getToolType() const { return Blueprint::IEditContext::eSelect; }
+    virtual Blueprint::IEditContext::ToolType getToolType() const { return Blueprint::IEditContext::eSelect; }
+    virtual Blueprint::Site::Ptr GetInteractionSite() const 
+    {
+        return m_pInteraction ? m_pInteraction->GetInteractionSite() : Blueprint::Site::Ptr();
+    }
 private:
     BlueprintView& m_view;
     std::auto_ptr< Selection_Interaction > m_pSelection;
@@ -146,14 +151,19 @@ public:
     virtual void keyPressEvent( QKeyEvent *event );
     virtual void reset();
     
-    virtual unsigned int getToolType() const { return Blueprint::IEditContext::eDraw; }
+    virtual Blueprint::IEditContext::ToolType getToolType() const { return Blueprint::IEditContext::eDraw; }
+    virtual Blueprint::Site::Ptr GetInteractionSite() const 
+    {
+        return m_pInteraction ? m_pInteraction->GetInteractionSite() : Blueprint::Site::Ptr();
+    }
+    
 protected:
     BlueprintView& m_view;
     std::auto_ptr< Selection_Interaction > m_pSelection;
     Blueprint::IInteraction::Ptr m_pInteraction;
     ToolMode m_toolMode;
 };
-
+/*
 class ContextTool : public PenTool
 {
 public:
@@ -162,16 +172,16 @@ public:
     
     virtual unsigned int getToolType() const { return m_toolID; }
     virtual void mousePressEvent( QMouseEvent *event );
-    /*
-    virtual void mouseHover( QMouseEvent* event );
-    virtual void mouseMoveEvent( QMouseEvent *event );
-    virtual void mouseReleaseEvent( QMouseEvent *event );
-    virtual void keyPressEvent( QKeyEvent *event );
-    virtual void reset();
-    */
+    
+    //virtual void mouseHover( QMouseEvent* event );
+    //virtual void mouseMoveEvent( QMouseEvent *event );
+    //virtual void mouseReleaseEvent( QMouseEvent *event );
+    //virtual void keyPressEvent( QKeyEvent *event );
+    //virtual void reset();
+    
 
 private:
     unsigned int m_toolID;
 };
-
+*/
 #endif // BLUEPRINTTOOLS_H

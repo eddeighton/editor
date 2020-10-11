@@ -78,8 +78,6 @@
     <addaction name="actionZoom_Out"/>
     <addaction name="actionTab_Out"/>
     <addaction name="separator"/>
-    <addaction name="actionPreview"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -96,16 +94,20 @@
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
-    <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuGenerate">
+    <property name="title">
+     <string>Generate</string>
+    </property>
+    <addaction name="actionExtrude"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuGenerate"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -206,19 +208,9 @@
     <string>Connection</string>
    </property>
   </action>
-  <action name="action">
+  <action name="actionExtrude">
    <property name="text">
-    <string>-</string>
-   </property>
-  </action>
-  <action name="actionUndo">
-   <property name="text">
-    <string>Undo</string>
-   </property>
-  </action>
-  <action name="actionRedo">
-   <property name="text">
-    <string>Redo</string>
+    <string>Extrude</string>
    </property>
   </action>
   <action name="actionSelect_All">
@@ -299,11 +291,6 @@
   <action name="actionTab_Out">
    <property name="text">
     <string>Tab Out</string>
-   </property>
-  </action>
-  <action name="actionPreview">
-   <property name="text">
-    <string>Preview</string>
    </property>
   </action>
  </widget>

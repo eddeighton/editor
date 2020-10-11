@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>460</width>
-    <height>398</height>
+    <height>100</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,46 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout" rowstretch="0,1,0,0,0,0,0,0,0,0" columnminimumwidth="0,400,0">
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_7">
+    
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Border</string>
+        <string>Inner:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="text_inner">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btnInner">
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Outer:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="text_outer">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="btnOuter">
+       <property name="text">
+        <string>Select</string>
        </property>
       </widget>
      </item>
@@ -33,189 +69,63 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Height</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="text_model">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
+     <item row="2" column="1">
+       <widget class="QSlider" name="slider_extrusion">
+         <property name="minimum">
+           <number>0</number>
+         </property>
+         <property name="maximum">
+           <number>8</number>
+         </property>
+         <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+         </property>
+       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QPushButton" name="btnOutput">
+      <widget class="QLineEdit" name="text_extrusion">
        <property name="text">
-        <string>Choose...</string>
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>1</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Texture:</string>
+        <string>Convex:</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_8">
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="convex">
        <property name="text">
-        <string>Scale</string>
+        <string>Convex Hull:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Test Model:</string>
+        <string>Output:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="text_output">
        <property name="enabled">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="btnModel">
+     <item row="4" column="2">
+      <widget class="QPushButton" name="btnOutput">
        <property name="text">
         <string>Choose...</string>
        </property>
       </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Type</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Blueprint File:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btnFile">
-       <property name="text">
-        <string>Choose...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="text_file">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="text_texture">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QPushButton" name="btnTexture">
-       <property name="text">
-        <string>Choose...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSlider" name="slider_height">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>32</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="2">
-      <widget class="QLineEdit" name="text_height">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QSlider" name="slider_border">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QSlider" name="slider_scale">
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="singleStep">
-        <number>1</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QCheckBox" name="smoothed">
-       <property name="text">
-        <string>Smooth Polyvox Mesh</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QCheckBox" name="doSubtract">
-       <property name="text">
-        <string>Do SGCore Subtractions</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QLineEdit" name="text_border">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="2">
-      <widget class="QLineEdit" name="text_scale">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1" colspan="2">
-      <widget class="QComboBox" name="type_combo"/>
      </item>
     </layout>
    </item>

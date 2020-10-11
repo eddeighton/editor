@@ -101,7 +101,6 @@ public slots:
     void OnLoadBlueprint();
     void OnSaveBlueprint();
     void OnSaveAsBlueprint();
-    void OnPreviewBlueprint();
 
     //cmds
     void OnCmd_Delete();
@@ -111,8 +110,7 @@ public slots:
     void OnCmd_SelectAll();
     void OnCmd_ZoomToAll();
     void OnCmd_TabOut();
-    void OnCmd_Undo();
-    void OnCmd_Redo();
+    void OnCmd_Extrude();
 
     //selection
     void OnCurrentSelectionItemChanged( const QModelIndex& current, const QModelIndex& previous );

@@ -24,21 +24,11 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
-    void on_btnFile_clicked();
+    void on_btnInner_clicked();
 
-    void on_btnModel_clicked();
+    void on_btnOuter_clicked();
 
     void on_btnOutput_clicked();
-
-    void on_btnTexture_clicked();
-
-    void on_type_combo_activated(const QString &arg1);
-
-    void on_slider_height_actionTriggered(int action);
-
-    void on_slider_border_actionTriggered(int action);
-
-    void on_slider_scale_actionTriggered(int action);
 
 private:
     Ui::Preview *ui;

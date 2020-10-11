@@ -37,9 +37,7 @@ public:
     QAction *actionArea;
     QAction *actionContour;
     QAction *actionConnection;
-    QAction *action;
-    QAction *actionUndo;
-    QAction *actionRedo;
+    QAction *actionExtrude;
     QAction *actionSelect_All;
     QAction *actionToolbox;
     QAction *actionProperties;
@@ -56,7 +54,6 @@ public:
     QAction *actionPaste;
     QAction *actionZoom_Out;
     QAction *actionTab_Out;
-    QAction *actionPreview;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     BlueprintView *graphicsView;
@@ -64,6 +61,7 @@ public:
     QMenu *menuFile;
     QMenu *menuView;
     QMenu *menuEdit;
+    QMenu *menuGenerate;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
     QDockWidget *dockToolbox;
@@ -92,12 +90,8 @@ public:
         actionContour->setObjectName(QString::fromUtf8("actionContour"));
         actionConnection = new QAction(MainWindow);
         actionConnection->setObjectName(QString::fromUtf8("actionConnection"));
-        action = new QAction(MainWindow);
-        action->setObjectName(QString::fromUtf8("action"));
-        actionUndo = new QAction(MainWindow);
-        actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
-        actionRedo = new QAction(MainWindow);
-        actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+        actionExtrude = new QAction(MainWindow);
+        actionExtrude->setObjectName(QString::fromUtf8("actionExtrude"));
         actionSelect_All = new QAction(MainWindow);
         actionSelect_All->setObjectName(QString::fromUtf8("actionSelect_All"));
         actionToolbox = new QAction(MainWindow);
@@ -130,8 +124,6 @@ public:
         actionZoom_Out->setObjectName(QString::fromUtf8("actionZoom_Out"));
         actionTab_Out = new QAction(MainWindow);
         actionTab_Out->setObjectName(QString::fromUtf8("actionTab_Out"));
-        actionPreview = new QAction(MainWindow);
-        actionPreview->setObjectName(QString::fromUtf8("actionPreview"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -163,6 +155,8 @@ public:
         menuView->setObjectName(QString::fromUtf8("menuView"));
         menuEdit = new QMenu(menuBar);
         menuEdit->setObjectName(QString::fromUtf8("menuEdit"));
+        menuGenerate = new QMenu(menuBar);
+        menuGenerate->setObjectName(QString::fromUtf8("menuGenerate"));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -213,6 +207,7 @@ public:
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuView->menuAction());
         menuBar->addAction(menuEdit->menuAction());
+        menuBar->addAction(menuGenerate->menuAction());
         menuFile->addAction(actionNew);
         menuFile->addAction(actionLoad);
         menuFile->addAction(actionSave);
@@ -221,8 +216,6 @@ public:
         menuFile->addAction(actionExit);
         menuView->addAction(actionZoom_Out);
         menuView->addAction(actionTab_Out);
-        menuView->addSeparator();
-        menuView->addAction(actionPreview);
         menuView->addSeparator();
         menuEdit->addAction(actionSelect);
         menuEdit->addAction(actionPen);
@@ -235,12 +228,10 @@ public:
         menuEdit->addAction(actionCopy);
         menuEdit->addAction(actionPaste);
         menuEdit->addSeparator();
-        menuEdit->addAction(actionUndo);
-        menuEdit->addAction(actionRedo);
-        menuEdit->addSeparator();
         menuEdit->addAction(actionSelect_All);
         menuEdit->addAction(actionDelete);
         menuEdit->addSeparator();
+        menuGenerate->addAction(actionExtrude);
         mainToolBar->addSeparator();
 
         retranslateUi(MainWindow);
@@ -259,9 +250,7 @@ public:
         actionArea->setText(QApplication::translate("MainWindow", "Area", nullptr));
         actionContour->setText(QApplication::translate("MainWindow", "Contour", nullptr));
         actionConnection->setText(QApplication::translate("MainWindow", "Connection", nullptr));
-        action->setText(QApplication::translate("MainWindow", "-", nullptr));
-        actionUndo->setText(QApplication::translate("MainWindow", "Undo", nullptr));
-        actionRedo->setText(QApplication::translate("MainWindow", "Redo", nullptr));
+        actionExtrude->setText(QApplication::translate("MainWindow", "Extrude", nullptr));
         actionSelect_All->setText(QApplication::translate("MainWindow", "Select All", nullptr));
         actionToolbox->setText(QApplication::translate("MainWindow", "Toolbox", nullptr));
         actionProperties->setText(QApplication::translate("MainWindow", "Properties", nullptr));
@@ -278,10 +267,10 @@ public:
         actionPaste->setText(QApplication::translate("MainWindow", "Paste", nullptr));
         actionZoom_Out->setText(QApplication::translate("MainWindow", "Zoom Out", nullptr));
         actionTab_Out->setText(QApplication::translate("MainWindow", "Tab Out", nullptr));
-        actionPreview->setText(QApplication::translate("MainWindow", "Preview", nullptr));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", nullptr));
         menuView->setTitle(QApplication::translate("MainWindow", "View", nullptr));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", nullptr));
+        menuGenerate->setTitle(QApplication::translate("MainWindow", "Generate", nullptr));
         dockToolbox->setWindowTitle(QApplication::translate("MainWindow", "Toolbox", nullptr));
         toolBox->setItemText(toolBox->indexOf(page), QApplication::translate("MainWindow", "Default", nullptr));
         toolBox->setItemText(toolBox->indexOf(page_2), QApplication::translate("MainWindow", "Page 2", nullptr));

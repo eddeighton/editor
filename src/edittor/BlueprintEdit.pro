@@ -54,6 +54,7 @@ ED_PATH = W:\root\ed\install
 ################################################
 # blueprint stuff
 BLUEPRINT_PATH = W:\root\blueprint\install
+#BLUEPRINT_PATH = W:\root\blueprint\install_releaseSymbols
 
 ################################################
 # boost stuff

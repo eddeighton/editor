@@ -146,10 +146,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( ui->actionSelect_All,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_SelectAll() ));
     ui->actionSelect_All->setShortcut( QKeySequence( "Ctrl+a" ) );
     
-    QObject::connect( ui->actionUndo,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Undo() ));
-    ui->actionUndo->setShortcut( QKeySequence( "Ctrl+z" ) );
-    QObject::connect( ui->actionRedo,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Redo() ));
-    ui->actionRedo->setShortcut( QKeySequence( "Ctrl+r" ) );
+    
+    QObject::connect( ui->actionExtrude,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Extrude() ));
+    
+    //QObject::connect( ui->actionUndo,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Undo() ));
+    //ui->actionUndo->setShortcut( QKeySequence( "Ctrl+z" ) );
+    //QObject::connect( ui->actionRedo,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Redo() ));
+    //ui->actionRedo->setShortcut( QKeySequence( "Ctrl+r" ) );
 
     m_pBlueprintItemModel = new BlueprintItemModel;
     m_pBlueprintSelectionModel = new BlueprintSelectionModel( m_pBlueprintItemModel );
@@ -207,8 +210,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( 
         ui->toolBox, SIGNAL( currentChanged(int) ), 
         ui->toolBox, SLOT( onCurrentPaletteChanged(int) ) );
-
-    QObject::connect( ui->actionPreview, SIGNAL(triggered()), ui->graphicsView, SLOT( OnPreviewBlueprint()));
 
     qDebug() << "MainWindow::ctor complete";
 }

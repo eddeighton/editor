@@ -343,6 +343,8 @@ void BlueprintToolbox::setToolbox( Blueprint::Toolbox::Ptr pToolbox )
 
     m_pToolBox = pToolbox;
     updateToolbox();
+    
+    onCurrentPaletteChanged( 0 );
 }
 
 BlueprintToolbox::ToolboxPanel::ToolboxPanel( BlueprintToolbox& toolbox, 
@@ -444,15 +446,15 @@ void BlueprintToolbox::OnPaletteMenu( ClipboardMsg msg )
 
     QObject::connect( menu.addAction( "Delete" ), &QAction::triggered, 
         std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteClip,       this, msg ) ));
-    QObject::connect( menu.addAction( "Delete All" ),       &QAction::triggered,
-        std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteAllClips,   this, msg ) ) );
-    QObject::connect( menu.addAction( "Copy To Clipboard" ),&QAction::triggered,
-        std::function< void() >( std::bind( &BlueprintToolbox::On_CopyToClipboard,  this, msg ) ) );
-    QObject::connect( menu.addAction( "Save Clip As" ),     &QAction::triggered,
-        std::function< void() >( std::bind( &BlueprintToolbox::On_SaveClipAs,       this, msg ) ) );
-                    
-    QObject::connect( menu.addAction( "Set Toolbox Dir" ),  SIGNAL(triggered()), this, SLOT(On_SetToolboxDir() )        );
-    QObject::connect( menu.addAction( "Rescan Toolbox" ),   SIGNAL(triggered()), this, SLOT(On_RescanToolBoxDir() )     );
+    //QObject::connect( menu.addAction( "Delete All" ),       &QAction::triggered,
+    //    std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteAllClips,   this, msg ) ) );
+    //QObject::connect( menu.addAction( "Copy To Clipboard" ),&QAction::triggered,
+    //    std::function< void() >( std::bind( &BlueprintToolbox::On_CopyToClipboard,  this, msg ) ) );
+    //QObject::connect( menu.addAction( "Save Clip As" ),     &QAction::triggered,
+    //    std::function< void() >( std::bind( &BlueprintToolbox::On_SaveClipAs,       this, msg ) ) );
+    //                
+    //QObject::connect( menu.addAction( "Set Toolbox Dir" ),  SIGNAL(triggered()), this, SLOT(On_SetToolboxDir() )        );
+    //QObject::connect( menu.addAction( "Rescan Toolbox" ),   SIGNAL(triggered()), this, SLOT(On_RescanToolBoxDir() )     );
 
     menu.exec( QCursor::pos() );
 }
@@ -462,11 +464,13 @@ void BlueprintToolbox::On_DeleteClip( ClipboardMsg msg )
     msg.pPalette->remove( msg.pSite );
     updateToolbox();
 }
+/*
 void BlueprintToolbox::On_DeleteAllClips( ClipboardMsg msg )
 {
     m_pToolBox->remove( msg.pPalette );
     updateToolbox();
 }
+
 void BlueprintToolbox::On_CopyToClipboard( ClipboardMsg msg )
 {
     updateToolbox();
@@ -482,4 +486,4 @@ void BlueprintToolbox::On_SetToolboxDir()
 void BlueprintToolbox::On_RescanToolBoxDir()
 {
     updateToolbox();
-}
+}*/

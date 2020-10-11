@@ -60,9 +60,9 @@ void BlueprintItemModel::OnBlueprintUpdate()
 void BlueprintItemModel::OnBlueprintSelected( BlueprintMsg msg )
 {
     qDebug() << "BlueprintItemModel::OnBlueprintSelected: " << msg.pNode->getName().c_str();
-    if( m_pRoot.get() )
+    if( m_pRoot.get() && ( m_pRoot->rowCount() > 0 ) )
     {
-        beginRemoveRows( QModelIndex(), 0, m_pRoot->rowCount() );
+        beginRemoveRows( QModelIndex(), 0, m_pRoot->rowCount() - 1 );
         m_pRoot.reset();
         endRemoveRows();
     }

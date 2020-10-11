@@ -43,7 +43,6 @@ BlueprintView::BlueprintView(QWidget *parent) :
     m_interactionMode( eNone ),
     m_selectTool( *this ),
     m_penTool( *this ),
-    //m_contextTool( *this ),
     m_pActiveTool( &m_selectTool ),
     m_iQuantisation( 16 )
 {
@@ -141,9 +140,11 @@ void BlueprintView::OnSaveBlueprint()
 
 void BlueprintView::OnSaveAsBlueprint()
 {
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
     QString strFilePath =
             QFileDialog::getSaveFileName( this,
-                tr( "Open Blueprint" ), "C:/WORKSPACE/Blueprint/data",
+                tr( "Open Blueprint" ), 
+                environment.value( "BLUEPRINT_TOOLBOX_PATH" ),
                 tr( "Blueprint Files (*.blu)" ) );
     if( !strFilePath.isEmpty() )
     {
@@ -160,12 +161,6 @@ void BlueprintView::OnSaveAsBlueprint()
                                   "The blueprint failed to save correctly." );
         }
     }
-}
-
-void BlueprintView::OnPreviewBlueprint()
-{
-    Preview* pPreviewDlg = new Preview( this, m_pBlueprintEdit );
-    pPreviewDlg->show();
 }
 
 void BlueprintView::OnCmd_Delete()
@@ -255,22 +250,11 @@ void BlueprintView::OnCmd_TabOut()
         SelectContext( m_pActiveContext->getParent() );
 }
 
-void BlueprintView::OnCmd_Undo()
+void BlueprintView::OnCmd_Extrude()
 {
-    if( m_pActiveContext )
-    {
-        m_pActiveContext->cmd_undo();
-        OnBlueprintModified();
-    }
-}
-
-void BlueprintView::OnCmd_Redo()
-{
-    if( m_pActiveContext )
-    {
-        m_pActiveContext->cmd_redo();
-        OnBlueprintModified();
-    }
+    Preview* pPreviewDlg = new Preview( this, m_pBlueprintEdit );
+    pPreviewDlg->setAttribute( Qt::WA_DeleteOnClose );
+    pPreviewDlg->show();
 }
 
 void BlueprintView::OnSelectTool_Selector()
@@ -304,17 +288,7 @@ void BlueprintView::OnSelectMode_Connection()
     ASSERT( m_pActiveTool );
     m_toolMode = Blueprint::IEditContext::eConnection;
 }
-/*
-void BlueprintView::OnSelectTool_Context( unsigned int uiToolID )
-{
-    ASSERT( m_pActiveTool );
-    qDebug() << "BlueprintView::OnContextTool() " << uiToolID;
 
-    m_pActiveTool->reset();
-    m_contextTool.setToolID( uiToolID );
-    m_pActiveTool = &m_contextTool;
-}
-*/
 void BlueprintView::OnSetQuantise( int iQuantisation )
 {
     switch( iQuantisation )
@@ -559,21 +533,22 @@ Blueprint::IGlyph* BlueprintView::findGlyph( QGraphicsItem* pItem ) const
 
 Blueprint::IGlyph* BlueprintView::findSelectableTopmostGlyph( const QPointF& pos ) const
 {
-    ASSERT( m_pActiveContext );
-    ASSERT( m_pActiveTool );
-    Blueprint::IGlyph* pGlyph = 0u;
-    QList< QGraphicsItem* > stack = items( pos.x(), pos.y() );
-    for( QList< QGraphicsItem* >::iterator i = stack.begin(),
-         iEnd = stack.end(); i!=iEnd; ++i )
+    Blueprint::IGlyph* pGlyph = nullptr;
+    if( m_pActiveContext && m_pActiveContext && m_pActiveTool )
     {
-        if( Blueprint::IGlyph* pTest = findGlyph( *i ) )
+        QList< QGraphicsItem* > stack = items( pos.x(), pos.y() );
+        for( QList< QGraphicsItem* >::iterator i = stack.begin(),
+             iEnd = stack.end(); i!=iEnd; ++i )
         {
-            if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType(), m_toolMode ) )
+            if( Blueprint::IGlyph* pTest = findGlyph( *i ) )
             {
-                if( Selection::glyphToSelectable( pTest ) )
+                if( m_pActiveContext->canEdit( pTest, m_pActiveTool->getToolType(), m_toolMode ) )
                 {
-                    pGlyph = pTest;
-                    break;
+                    if( Selection::glyphToSelectable( pTest ) )
+                    {
+                        pGlyph = pTest;
+                        break;
+                    }
                 }
             }
         }
@@ -799,11 +774,17 @@ void BlueprintView::CalculateRulerItems()
     const QRect viewportRect = viewport()->rect();
     const QRectF rect( mapToScene( viewportRect.topLeft() ), mapToScene( viewportRect.bottomRight() ) );
 
+    int iMainLineStep = 4;
+    if( m_pToolBox )
+    {
+        m_pToolBox->getConfigValue( ".background.step", iMainLineStep );
+    }
+        
     float fXStep = 1.0f;
-    while( fXStep / 16.0f < ( 4 / m_v2ZoomLevel.x() ) )
+    while( fXStep / 16.0f < ( iMainLineStep / m_v2ZoomLevel.x() ) )
         fXStep *= 2.0f;
     float fYStep = 1.0f;
-    while( fYStep / 16.0f < ( 4 / m_v2ZoomLevel.y() ) )
+    while( fYStep / 16.0f < ( iMainLineStep / m_v2ZoomLevel.y() ) )
         fYStep *= 2.0f;
 
     const float fOffsetX = 8.0f / m_v2ZoomLevel.x();
@@ -875,7 +856,7 @@ void BlueprintView::CalculateRulerItems()
             }
             pItem->setText( os.str().c_str() );
             pItem->setBrush( QBrush( textColor ) );
-            pItem->setPos( rect.left() + fOffsetX, y );
+            pItem->setPos( rect.left() + fOffsetX, y + fOffsetY * 2.0f );
         }
         for( TextItemVector::iterator y = yIter ;y != m_rulerHoriItems.end(); ++y )
         {
@@ -943,20 +924,42 @@ void BlueprintView::drawBackground(QPainter *painter, const QRectF &rect)
         unsigned int uiX = 0u;
         for( float x = fQuantLeft; x <= fQuantRight; x += fXStep, ++uiX )
         {
-            if( uiX % iMainLineStep )
-                gridPen.setColor( otherLineColour );
-            else
+            if( x == 0 )
+            {
+                gridPen.setStyle( Qt::SolidLine );
                 gridPen.setColor( mainLineColour );
+            }
+            else 
+            {
+                gridPen.setStyle( Qt::DotLine );
+                if( uiX % iMainLineStep )
+                {
+                    gridPen.setColor( otherLineColour );
+                }
+                else
+                {
+                    gridPen.setColor( mainLineColour );
+                }
+            }
             painter->setPen( gridPen );
             painter->drawLine( QPoint( x, fQuantTop ), QPoint( x, fQuantBottom ) );
         }
         unsigned int uiY = 0u;
         for( float y = fQuantTop; y <= fQuantBottom; y += fYStep, ++uiY )
         {
-            if( uiY % iMainLineStep )
-                gridPen.setColor( otherLineColour );
-            else
+            if( y == 0 )
+            {
+                gridPen.setStyle( Qt::SolidLine );
                 gridPen.setColor( mainLineColour );
+            }
+            else
+            {
+                gridPen.setStyle( Qt::DotLine );
+                if( uiY % iMainLineStep )
+                    gridPen.setColor( otherLineColour );
+                else
+                    gridPen.setColor( mainLineColour );
+            }
             painter->setPen( gridPen );
             painter->drawLine( QPoint( fQuantLeft, y ), QPoint( fQuantRight, y ) );
         }

@@ -95,6 +95,7 @@ signals:
     void OnBlueprintSelected( BlueprintMsg msg );
     void OnEditContextChanged( BlueprintContext context );
     void OnClipboardAction();
+    void OnWindowTitleModified( QString strTitle );
 
 public slots:
     void OnNewBlueprint();
@@ -116,7 +117,8 @@ public slots:
     void OnCurrentSelectionItemChanged( const QModelIndex& current, const QModelIndex& previous );
     void OnSelectionChanged( const QItemSelection& selected, const QItemSelection& deselected );
 
-    //dynamic cmds
+    //view modes
+    void setViewMode( bool bBitmap, bool bCellComplex, bool bClearance );
 
     //tools
     void OnSelectTool_Selector();

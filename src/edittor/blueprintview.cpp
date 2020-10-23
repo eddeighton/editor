@@ -76,16 +76,24 @@ void BlueprintView::OnNewBlueprint()
     m_pActiveContext = m_pBlueprintEdit.get();
 
     OnBlueprintSelected( BlueprintMsg( m_pBlueprint ) );
+    
+    OnWindowTitleModified( "NewBlueprint" );
 }
 
 void BlueprintView::OnLoadBlueprint()
 {
-    Blueprint::Site::Ptr pNewBlueprint;
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    QString strDefaultPath = environment.value( "BLUEPRINT_TOOLBOX_PATH" );
+    if( m_pBlueprintEdit && !m_pBlueprintEdit->getFilePath().empty() )
+    {
+        strDefaultPath = QString::fromUtf8( m_pBlueprintEdit->getFilePath().c_str() );
+    }
+    
+    Blueprint::Site::Ptr pNewBlueprint;
     QString strFilePath =
             QFileDialog::getOpenFileName( this,
                 tr( "Open Blueprint" ), 
-                environment.value( "BLUEPRINT_TOOLBOX_PATH" ),
+                strDefaultPath,
                 tr( "Blueprint Files (*.blu)" ) );
     if( !strFilePath.isEmpty() )
     {
@@ -93,6 +101,7 @@ void BlueprintView::OnLoadBlueprint()
         {
             Blueprint::Factory factory;
             pNewBlueprint = factory.load( strFilePath.toStdString() );
+            OnWindowTitleModified( strFilePath );
         }
         catch( ... )
         {
@@ -127,6 +136,7 @@ void BlueprintView::OnSaveBlueprint()
             {
                 Blueprint::Factory factory;
                 factory.save( m_pBlueprint, m_pBlueprintEdit->getFilePath() );
+                OnWindowTitleModified( QString::fromUtf8( m_pBlueprintEdit->getFilePath().c_str() ) );
             }
             catch( ... )
             {
@@ -141,10 +151,16 @@ void BlueprintView::OnSaveBlueprint()
 void BlueprintView::OnSaveAsBlueprint()
 {
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    QString strDefaultPath = environment.value( "BLUEPRINT_TOOLBOX_PATH" );
+    if( m_pBlueprintEdit && !m_pBlueprintEdit->getFilePath().empty() )
+    {
+        strDefaultPath = QString::fromUtf8( m_pBlueprintEdit->getFilePath().c_str() );
+    }
+    
     QString strFilePath =
             QFileDialog::getSaveFileName( this,
                 tr( "Open Blueprint" ), 
-                environment.value( "BLUEPRINT_TOOLBOX_PATH" ),
+                strDefaultPath,
                 tr( "Blueprint Files (*.blu)" ) );
     if( !strFilePath.isEmpty() )
     {
@@ -153,6 +169,7 @@ void BlueprintView::OnSaveAsBlueprint()
             Blueprint::Factory factory;
             factory.save( m_pBlueprint, strFilePath.toStdString() );
             m_pBlueprintEdit->setFilePath( strFilePath.toStdString() );
+            OnWindowTitleModified( strFilePath );
         }
         catch( ... )
         {
@@ -353,6 +370,17 @@ void BlueprintView::OnSelectionChanged( const QItemSelection& selected, const QI
         if( Selectable* pSelectable = selectableFromNode( m_pModel->getIndexNode( *i ) ) )
             pSelectable->setSelected( false );
     }
+}
+
+void BlueprintView::setViewMode( bool bBitmap, bool bCellComplex, bool bClearance )
+{
+    qDebug() << "OnBitmapChanged called: " << bBitmap << " " << bCellComplex << " " << bClearance;
+    
+    m_pBlueprintEdit->setViewMode( bBitmap, bCellComplex, bClearance );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
 }
 
 void BlueprintView::SelectContext( Blueprint::IEditContext* pNewContext )

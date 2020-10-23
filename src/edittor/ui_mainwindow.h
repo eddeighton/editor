@@ -54,6 +54,9 @@ public:
     QAction *actionPaste;
     QAction *actionZoom_Out;
     QAction *actionTab_Out;
+    QAction *actionMode_Bitmap;
+    QAction *actionMode_CellComplex;
+    QAction *actionMode_Clearance;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     BlueprintView *graphicsView;
@@ -124,6 +127,12 @@ public:
         actionZoom_Out->setObjectName(QString::fromUtf8("actionZoom_Out"));
         actionTab_Out = new QAction(MainWindow);
         actionTab_Out->setObjectName(QString::fromUtf8("actionTab_Out"));
+        actionMode_Bitmap = new QAction(MainWindow);
+        actionMode_Bitmap->setObjectName(QString::fromUtf8("actionMode_Bitmap"));
+        actionMode_CellComplex = new QAction(MainWindow);
+        actionMode_CellComplex->setObjectName(QString::fromUtf8("actionMode_CellComplex"));
+        actionMode_Clearance = new QAction(MainWindow);
+        actionMode_Clearance->setObjectName(QString::fromUtf8("actionMode_Clearance"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -217,6 +226,10 @@ public:
         menuView->addAction(actionZoom_Out);
         menuView->addAction(actionTab_Out);
         menuView->addSeparator();
+        menuView->addAction(actionMode_Bitmap);
+        menuView->addAction(actionMode_CellComplex);
+        menuView->addAction(actionMode_Clearance);
+        menuView->addSeparator();
         menuEdit->addAction(actionSelect);
         menuEdit->addAction(actionPen);
         menuEdit->addSeparator();
@@ -267,6 +280,9 @@ public:
         actionPaste->setText(QApplication::translate("MainWindow", "Paste", nullptr));
         actionZoom_Out->setText(QApplication::translate("MainWindow", "Zoom Out", nullptr));
         actionTab_Out->setText(QApplication::translate("MainWindow", "Tab Out", nullptr));
+        actionMode_Bitmap->setText(QApplication::translate("MainWindow", "Bitmap", nullptr));
+        actionMode_CellComplex->setText(QApplication::translate("MainWindow", "Cell Complex", nullptr));
+        actionMode_Clearance->setText(QApplication::translate("MainWindow", "Clearance", nullptr));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", nullptr));
         menuView->setTitle(QApplication::translate("MainWindow", "View", nullptr));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", nullptr));

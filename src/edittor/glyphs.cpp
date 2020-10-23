@@ -87,7 +87,8 @@ void GlyphControlPoint::setShouldRender( bool bShouldRender )
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-static const QColor g_pathColor( 255,255,255,125 );
+//static const QColor g_pathColor( 255,255,255,125 );
+static const QColor g_pathColor( 155,155,155,125 );
 static const float g_pathWidth( 4.0f );
 
 GlyphPath::GlyphPath( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
@@ -327,11 +328,11 @@ void GlyphImage::update()
         m_pItem->setPos( getImageSpec()->getX(), getImageSpec()->getY() );
         m_pItem->setOffset( getImageSpec()->getOffsetX(), getImageSpec()->getOffsetY() );
     }
-    else if( m_pItem )
+    /*else if( m_pItem )
     {
         cleanUpItem( m_pItem, m_map, getImageSpec(), m_pScene );
         m_pItem = 0u;
-    }
+    }*/
 }
 
 void GlyphImage::setShouldRender( bool bShouldRender )

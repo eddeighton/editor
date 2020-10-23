@@ -135,7 +135,27 @@ FlowView::FlowItem::FlowItem( FlowView& view, Blueprint::Site::Ptr pSite, Bluepr
         tempScene.render(&painter );
         painter.resetTransform();
         painter.setPen( QColor( 255, 255, 255 ) );
-        painter.drawText( 16, 32, pSite->Blueprint::Node::getName().c_str() );
+        
+        std::string strName = pSite->Blueprint::Node::getName();
+        {
+            const std::vector< std::string > prefixes =
+            {
+                std::string( "room_shape_" ),
+                std::string( "room_" ),
+                std::string( "object_" ),
+                std::string( "ship_" ),
+            };
+            for( const std::string& prefix : prefixes )
+            {
+                std::string::const_iterator iSearch =
+                    std::search( strName.begin(), strName.end(), 
+                                  prefix.begin(), prefix.end() );
+                if( iSearch == strName.begin() )
+                    strName.erase( 0, prefix.size() );
+            }
+        }
+        
+        painter.drawText( 16, 32, 100, 90, Qt::TextWordWrap, strName.c_str() );
         painter.end();
     }
 

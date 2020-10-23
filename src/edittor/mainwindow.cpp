@@ -37,6 +37,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->dockProperties->toggleViewAction()->setIcon(    QIcon( ":/art/dialog.png" ) );
     ui->dockToolbox->toggleViewAction()->setIcon(       QIcon( ":/art/folder.png" ) );
 
+    ui->actionMode_Bitmap->setIcon(         QIcon( ":/art/joystick.png" ) );
+    ui->actionMode_CellComplex->setIcon(    QIcon( ":/art/scan.png" ) );
+    ui->actionMode_Clearance->setIcon(      QIcon( ":/art/rook.png" ) );
+    
     //ui->actionSelect->setIcon( QIcon( ":/art/disk_saveas.png" ) );
     ui->actionSelect->setCheckable( true );
     ui->actionPen->setIcon( QIcon( ":/art/pen_blue.png" ) );
@@ -50,7 +54,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pModeActionGroup->addAction( ui->actionContour );
     m_pModeActionGroup->addAction( ui->actionConnection );
     m_pModeActionGroup->setExclusive( true );
-
+    
+    ui->actionMode_Bitmap->setCheckable( true );
+    ui->actionMode_CellComplex->setCheckable( true );
+    ui->actionMode_Clearance->setCheckable( true );
+    
     ui->actionSelect->setData( -2 );
     ui->actionPen->setData( -1 );
     m_pToolActionGroup->addAction( ui->actionSelect );
@@ -101,6 +109,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addAction( ui->actionContour );
     ui->mainToolBar->addAction( ui->actionConnection );
     
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction( ui->actionMode_Bitmap );
+    ui->mainToolBar->addAction( ui->actionMode_CellComplex );
+    ui->mainToolBar->addAction( ui->actionMode_Clearance );
+    
     ui->menuView->addAction( ui->dockProperties->toggleViewAction() );
     ui->dockProperties->toggleViewAction()->setShortcut( Qt::Key_F1 );
     ui->menuView->addAction( ui->dockToolbox->toggleViewAction() );
@@ -146,6 +159,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( ui->actionSelect_All,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_SelectAll() ));
     ui->actionSelect_All->setShortcut( QKeySequence( "Ctrl+a" ) );
     
+    QObject::connect( ui->actionMode_Bitmap,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_CellComplex,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_Clearance,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     
     QObject::connect( ui->actionExtrude,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Extrude() ));
     
@@ -173,6 +189,9 @@ MainWindow::MainWindow(QWidget *parent) :
                       ui->graphicsView, &BlueprintView::OnSelectionChanged );
 
     QObject::connect( ui->graphicsView,&BlueprintView::OnEditContextChanged, this, &MainWindow::OnEditContext );
+    
+    QObject::connect( ui->graphicsView,&BlueprintView::OnWindowTitleModified,
+                      this, &MainWindow::OnWindowTitleModified );
 
     ui->graphicsView->setModel( m_pBlueprintSelectionModel, m_pBlueprintItemModel );
     ui->graphicsView->OnNewBlueprint();
@@ -219,6 +238,11 @@ MainWindow::~MainWindow()
     delete m_pBlueprintItemModel;
 }
 
+void MainWindow::OnWindowTitleModified( QString strTitle )
+{
+    setWindowTitle( strTitle );
+}
+
 void MainWindow::OnBlueprintUpdate()
 {
 }
@@ -226,6 +250,20 @@ void MainWindow::OnBlueprintUpdate()
 void MainWindow::OnBlueprintSelected( BlueprintMsg msg )
 {
     qDebug() << "MainWindow Recieved new blueprint: " << msg.pNode->getName().c_str();
+}
+
+void MainWindow::OnModeChanged()
+{
+    if( ui->graphicsView && 
+        ui->actionMode_Bitmap && 
+        ui->actionMode_CellComplex && 
+        ui->actionMode_Clearance )
+    {
+        ui->graphicsView->setViewMode( 
+            ui->actionMode_Bitmap->isChecked(),
+            ui->actionMode_CellComplex->isChecked(),
+            ui->actionMode_Clearance->isChecked() );
+    }
 }
 
 void MainWindow::OnEditContext( BlueprintContext /*msg*/ )

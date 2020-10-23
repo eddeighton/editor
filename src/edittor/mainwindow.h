@@ -31,6 +31,8 @@ private slots:
     void OnBlueprintUpdate();
     void OnBlueprintSelected( BlueprintMsg msg );
     void OnEditContext( BlueprintContext msg );
+    void OnModeChanged();
+    void OnWindowTitleModified( QString strTitle );
 
 private:
     Ui::MainWindow *ui;

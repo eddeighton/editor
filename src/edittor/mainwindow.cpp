@@ -41,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMode_CellComplex->setIcon(    QIcon( ":/art/scan.png" ) );
     ui->actionMode_Clearance->setIcon(      QIcon( ":/art/rook.png" ) );
     
+    ui->actionRotate_Left->setIcon( QIcon( ":/art/arrow_cycle.png" ) );
+    ui->actionRotate_Right->setIcon( QIcon( ":/art/arrow_cycle.png" ) );
+    ui->actionFlip_Horizontal->setIcon( QIcon( ":/art/arrow_right.png" ) );
+    ui->actionFlip_Vertical->setIcon( QIcon( ":/art/arrow_up.png" ) );
+    
     //ui->actionSelect->setIcon( QIcon( ":/art/disk_saveas.png" ) );
     ui->actionSelect->setCheckable( true );
     ui->actionPen->setIcon( QIcon( ":/art/pen_blue.png" ) );
@@ -83,6 +88,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mainToolBar->addSeparator();
 
+    ui->mainToolBar->addAction( ui->actionRotate_Left );
+    ui->mainToolBar->addAction( ui->actionRotate_Right );
+    ui->mainToolBar->addAction( ui->actionFlip_Horizontal );
+    ui->mainToolBar->addAction( ui->actionFlip_Vertical );
+    
+    ui->mainToolBar->addSeparator();
+    
     ui->mainToolBar->addWidget( new QLabel( "Snap", this ) );
 
     QComboBox* pQuantiseComboBox = new QComboBox( this );
@@ -162,6 +174,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( ui->actionMode_Bitmap,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     QObject::connect( ui->actionMode_CellComplex,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     QObject::connect( ui->actionMode_Clearance,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    
+    QObject::connect( ui->actionRotate_Left,        SIGNAL(triggered()),    ui->graphicsView,SLOT( OnRotateLeft() ));
+    QObject::connect( ui->actionRotate_Right,       SIGNAL(triggered()),    ui->graphicsView,SLOT( OnRotateRight() ));
+    QObject::connect( ui->actionFlip_Horizontal,    SIGNAL(triggered()),    ui->graphicsView,SLOT( OnFlipHorizontally() ));
+    QObject::connect( ui->actionFlip_Vertical,      SIGNAL(triggered()),    ui->graphicsView,SLOT( OnFlipVeritcally() ));
     
     QObject::connect( ui->actionExtrude,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Extrude() ));
     

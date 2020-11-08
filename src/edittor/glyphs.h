@@ -9,6 +9,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsEffect>
 #include <QGraphicsSimpleTextItem>
+#include <QPainter>
 
 #include "blueprintscene.h"
 
@@ -19,6 +20,7 @@
 #include "blueprint/site.h"
 #include "blueprint/glyph.h"
 #include "blueprint/edit.h"
+#include "blueprint/toolbox.h"
 #endif
 
 typedef std::map< QGraphicsItem*, Blueprint::IGlyph* > ItemMap;
@@ -115,7 +117,8 @@ class GlyphControlPoint : public Blueprint::GlyphControlPoint, public Selectable
 {
 public:
     GlyphControlPoint( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-                       GlyphMap map, Blueprint::ControlPoint* pControlPoint, float fZoom, bool bShouldRender );
+                       GlyphMap map, Blueprint::ControlPoint* pControlPoint, float fZoom, bool bShouldRender,
+                       Blueprint::Toolbox::Ptr pToolboxPtr );
     ~GlyphControlPoint();
 
     //Selectable
@@ -135,10 +138,12 @@ public:
     QGraphicsEllipseItem* getItem() const;
 
 private:
-    float m_fSize, m_fWidth;
+    float m_fSizeScaling;
+    float m_fSize;
     QGraphicsScene* m_pScene;
     GlyphMap m_map;
     QGraphicsEllipseItem* m_pItem;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -147,7 +152,8 @@ class GlyphPath : public Blueprint::GlyphPath, public ZoomDependent, public Rend
 {
 public:
     GlyphPath( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-               GlyphMap map, Blueprint::MarkupPath* pPath, float fZoom, bool bShouldRender );
+               GlyphMap map, Blueprint::MarkupPath* pPath, float fZoom, bool bShouldRender,
+               Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphPath();
 
     //ZoomDependent
@@ -159,24 +165,66 @@ public:
     //Blueprint::GlyphPath
     virtual void update();
 
-    void matchPath( QPainterPath& path );
-
 private:
     float m_fSize;
     QPainterPath m_path;
     QGraphicsScene* m_pScene;
     GlyphMap m_map;
     QGraphicsPathItem* m_pItem;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
 };
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+class GlyphOrigin : public Blueprint::GlyphOrigin, public Selectable, public Renderable
+{
+public:
+    GlyphOrigin( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
+                GlyphMap map, Blueprint::Origin* pOrigin, 
+                Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                Blueprint::Toolbox::Ptr pToolBoxPtr );
+    ~GlyphOrigin();
+
+    //Selectable
+    virtual void setSelected( bool bSelected );
+    virtual bool isImage() const { return true; }
+
+    //Renderable
+    virtual void setShouldRender( bool bShouldRender );
+
+    bool isActiveContext() const;
+
+    //Blueprint::GlyphOrigin
+    virtual void update();
+
+    void updateColours();
+private:
+    void setOrCreateImageItem();
+private:
+    QGraphicsScene* m_pScene;
+    GlyphMap m_map;
+    
+    QPainterPath m_path;
+    QGraphicsPathItem* m_pPathItem;
+    QGraphicsLineItem* m_pItemX;
+    QGraphicsLineItem* m_pItemY;
+    
+    Blueprint::IEditContext*& m_pActiveContext;
+    Timing::UpdateTick m_lastUpdateTick;
+    bool m_bActiveContext;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
+};
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+/*
 class GlyphImage : public Blueprint::GlyphImage, public Selectable, public Renderable
 {
 public:
     GlyphImage( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                 GlyphMap map, Blueprint::ImageSpec* pImage, 
-                Blueprint::IEditContext*& pActiveContext, bool bShouldRender );
+                Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphImage();
 
     //Selectable
@@ -202,8 +250,9 @@ private:
     Blueprint::IEditContext*& m_pActiveContext;
     Timing::UpdateTick m_lastUpdateTick;
     bool m_bActiveContext;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
 };
-
+*/
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -211,7 +260,8 @@ class GlyphText : public Blueprint::GlyphText, public Renderable
 {
 public:
     GlyphText( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-               GlyphMap map, Blueprint::MarkupText* pText, bool bShouldRender );
+               GlyphMap map, Blueprint::MarkupText* pText, bool bShouldRender,
+               Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphText();
 
     //Renderable
@@ -224,6 +274,7 @@ private:
     QGraphicsScene* m_pScene;
     GlyphMap m_map;
     QGraphicsSimpleTextItem* m_pItem;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
 };
 
 

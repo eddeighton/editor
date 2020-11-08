@@ -15,14 +15,15 @@
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-ClipScene::ClipScene(QWidget *parent) :
+ClipScene::ClipScene( QWidget *parent) :
     QGraphicsScene( parent ),
     m_pNullContext( 0u )
 {
 }
 
-void ClipScene::setSite( Blueprint::Site::Ptr pSite )
+void ClipScene::setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pToolBox )
 {
+    m_pToolBox = pToolBox;
     if( pSite )
     {
         m_pBlueprintEdit.reset();
@@ -39,30 +40,36 @@ void ClipScene::setSite( Blueprint::Site::Ptr pSite )
 //glyph factory interface
 Blueprint::IGlyph::Ptr ClipScene::createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent )
 {
-    
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphControlPoint( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pControlPoint, 128.0f / this->sceneRect().height(), true ) );
+        GlyphMap( m_itemMap, m_specMap ), pControlPoint, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
-
+/*
 Blueprint::IGlyph::Ptr ClipScene::createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphImage( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pImage, m_pNullContext, true ) );
+        GlyphMap( m_itemMap, m_specMap ), pImage, m_pNullContext, true, m_pToolBox ) );
+    return pNewGlyph;
+}
+*/
+Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
+{
+    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphOrigin( pParent, this, 
+        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pNullContext, true, m_pToolBox ) );
     return pNewGlyph;
 }
 
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, 128.0f / this->sceneRect().height(), true ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 
 Blueprint::IGlyph::Ptr ClipScene::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphText( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupText, false ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupText, false, m_pToolBox ) );
     return pNewGlyph;
 }
 
@@ -127,7 +134,7 @@ FlowView::FlowItem::FlowItem( FlowView& view, Blueprint::Site::Ptr pSite, Bluepr
     QPixmap buffer( 128, 128 );
     {
         ClipScene tempScene;
-        tempScene.setSite( pSite );
+        tempScene.setSite( pSite, m_view.m_toolBox.getToolbox() );
         QPainter painter;
         //painter.setRenderHint( QPainter::HighQualityAntialiasing, true );
         painter.begin( &buffer );
@@ -445,7 +452,12 @@ void BlueprintToolbox::updateToolbox()
             ToolboxPanel::Ptr pNewPanel( new ToolboxPanel( *this, i->second, uiIndex ) );
             m_panels.insert( std::make_pair( i->first, pNewPanel ) );
         }
-        generics::for_each_second( updates, boost::bind( &BlueprintToolbox::ToolboxPanel::updateClips, _1 ) );
+        
+        //typedef std::map< std::string, ToolboxPanel::Ptr > PanelMap;
+        for( auto& i : updates )
+        {
+            i.second->updateClips();
+        }
     }
 }
 

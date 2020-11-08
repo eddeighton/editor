@@ -71,7 +71,8 @@ public:
 
     //glyph factory interface
     virtual Blueprint::IGlyph::Ptr createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent );
-    virtual Blueprint::IGlyph::Ptr createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent );
+    //virtual Blueprint::IGlyph::Ptr createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent );
+    virtual Blueprint::IGlyph::Ptr createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent );
 
@@ -128,6 +129,12 @@ public slots:
     void OnSelectMode_Area();
     void OnSelectMode_Contour();
     void OnSelectMode_Connection();
+    
+    //rotate and flip
+    void OnRotateLeft();
+    void OnRotateRight();
+    void OnFlipHorizontally();
+    void OnFlipVeritcally();
 
     void OnSetQuantise( int iQuantisation );
 protected:

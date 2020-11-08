@@ -192,6 +192,7 @@ void BlueprintView::OnCmd_Delete()
 
 void BlueprintView::OnCmd_Cut()
 {
+    ASSERT( m_pActiveContext );
     if( Blueprint::Site::Ptr pCut = boost::dynamic_pointer_cast< Blueprint::Site >(
         m_pActiveContext->cmd_cut( getSelection() ) ) )
     {
@@ -203,6 +204,7 @@ void BlueprintView::OnCmd_Cut()
 
 void BlueprintView::OnCmd_Copy()
 {
+    ASSERT( m_pActiveContext );
     if( Blueprint::Site::Ptr pCopy = boost::dynamic_pointer_cast< Blueprint::Site >(
         m_pActiveContext->cmd_copy( getSelection() ) ) )
     {
@@ -306,6 +308,46 @@ void BlueprintView::OnSelectMode_Connection()
     m_toolMode = Blueprint::IEditContext::eConnection;
 }
 
+void BlueprintView::OnRotateLeft()
+{
+    ASSERT( m_pActiveContext );
+    m_pActiveContext->cmd_rotateLeft( getSelection() );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+
+void BlueprintView::OnRotateRight()
+{
+    ASSERT( m_pActiveContext );
+    m_pActiveContext->cmd_rotateRight( getSelection() );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+
+void BlueprintView::OnFlipHorizontally()
+{
+    ASSERT( m_pActiveContext );
+    m_pActiveContext->cmd_flipHorizontally( getSelection() );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+
+void BlueprintView::OnFlipVeritcally()
+{
+    ASSERT( m_pActiveContext );
+    m_pActiveContext->cmd_flipVertically( getSelection() );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+    
 void BlueprintView::OnSetQuantise( int iQuantisation )
 {
     switch( iQuantisation )
@@ -393,7 +435,7 @@ void BlueprintView::SelectContext( Blueprint::IEditContext* pNewContext )
     m_pActiveContext = pNewContext;
 
     {
-        SpecMap::const_iterator iFind = m_specMap.find( pOldContext->getImageSpec() );
+        SpecMap::const_iterator iFind = m_specMap.find( pOldContext->getOrigin() );
         if( iFind != m_specMap.end() )
         {
             ItemMap::const_iterator iFind2 = m_itemMap.find( iFind->second );
@@ -402,7 +444,7 @@ void BlueprintView::SelectContext( Blueprint::IEditContext* pNewContext )
         }
     }
     {
-        SpecMap::const_iterator iFind = m_specMap.find( m_pActiveContext->getImageSpec() );
+        SpecMap::const_iterator iFind = m_specMap.find( m_pActiveContext->getOrigin() );
         if( iFind != m_specMap.end() )
         {
             ItemMap::const_iterator iFind2 = m_itemMap.find( iFind->second );
@@ -522,7 +564,7 @@ QGraphicsItem* BlueprintView::findActiveContextItem() const
 {
     ASSERT( m_pActiveContext );
     QGraphicsItem* pItem = 0u;
-    if( const Blueprint::GlyphSpec* pGlyphSpec = m_pActiveContext->getImageSpec() )
+    if( const Blueprint::GlyphSpec* pGlyphSpec = m_pActiveContext->getOrigin() )
     {
         SpecMap::const_iterator iFind = m_specMap.find( pGlyphSpec );
         if( iFind != m_specMap.end() )
@@ -588,29 +630,37 @@ Blueprint::IGlyph* BlueprintView::findSelectableTopmostGlyph( const QPointF& pos
 Blueprint::IGlyph::Ptr BlueprintView::createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphControlPoint( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_v2ZoomLevel.y(), true ) );
+        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_v2ZoomLevel.y(), true, m_pToolBox ) );
     CalculateOversizedSceneRect();
     return pNewGlyph;
 }
-
+/*
 Blueprint::IGlyph::Ptr BlueprintView::createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphImage( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pImage, m_pActiveContext, true ) );
+        GlyphMap( m_itemMap, m_specMap ), pImage, m_pActiveContext, true, m_pToolBox ) );
+    return pNewGlyph;
+}
+*/
+
+Blueprint::IGlyph::Ptr BlueprintView::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
+{
+    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphOrigin( pParent, m_pBlueprintScene, 
+        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pActiveContext, true, m_pToolBox ) );
     return pNewGlyph;
 }
 
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_v2ZoomLevel.y(), true ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_v2ZoomLevel.y(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphText( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupText, true ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupText, true, m_pToolBox ) );
     return pNewGlyph;
 }
 

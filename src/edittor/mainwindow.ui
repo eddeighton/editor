@@ -51,6 +51,7 @@
     </item>
    </layout>
   </widget>
+  
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -71,18 +72,6 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>View</string>
-    </property>
-    <addaction name="actionZoom_Out"/>
-    <addaction name="actionTab_Out"/>
-    <addaction name="separator"/>
-    <addaction name="actionMode_Bitmap"/>
-    <addaction name="actionMode_CellComplex"/>
-    <addaction name="actionMode_Clearance"/>
-    <addaction name="separator"/>
-   </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
@@ -98,8 +87,40 @@
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
+    
+   <widget class="QMenu" name="menuRotate">
+    <property name="title">
+     <string>Rotate</string>
+    </property>
+    <addaction name="actionRotate_Left"/>
+    <addaction name="actionRotate_Right"/>
+   </widget>
+   <widget class="QMenu" name="menuFlip">
+    <property name="title">
+     <string>Flip</string>
+    </property>
+    <addaction name="actionFlip_Horizontal"/>
+    <addaction name="actionFlip_Vertical"/>
+   </widget>
+    
+    <addaction name="menuRotate"/>
+    <addaction name="menuFlip"/>
+    
+    <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
     <addaction name="actionDelete"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="actionTab_Out"/>
+    <addaction name="separator"/>
+    <addaction name="actionMode_Bitmap"/>
+    <addaction name="actionMode_CellComplex"/>
+    <addaction name="actionMode_Clearance"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGenerate">
@@ -109,10 +130,11 @@
     <addaction name="actionExtrude"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuView"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
    <addaction name="menuGenerate"/>
   </widget>
+  
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -314,6 +336,29 @@
    </property>
   </action>
   
+  
+  <action name="actionRotate_Left">
+   <property name="text">
+    <string>Rotate Left</string>
+   </property>
+  </action>
+  <action name="actionRotate_Right">
+   <property name="text">
+    <string>Rotate Right</string>
+   </property>
+  </action>
+  <action name="actionFlip_Horizontal">
+   <property name="text">
+    <string>Flip Horizontally</string>
+   </property>
+  </action>
+  <action name="actionFlip_Vertical">
+   <property name="text">
+    <string>Flip Vertically</string>
+   </property>
+  </action>
+  
+    
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

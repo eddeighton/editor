@@ -38,8 +38,8 @@ HEADERS  += mainwindow.h \
     mainwidget.h \
     geometryengine.h
 
-FORMS    += mainwindow.ui \
-    preview.ui
+FORMS    += W:\root\editor\build\mainwindow.ui \
+            W:\root\editor\build\preview.ui
 
     
     

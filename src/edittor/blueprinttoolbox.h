@@ -27,11 +27,12 @@ class ClipScene : public QGraphicsScene, public Blueprint::GlyphFactory
 public:
     explicit ClipScene(QWidget *parent = 0);
 
-    void setSite( Blueprint::Site::Ptr pSite );
+    void setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pToolBox );
 
     //glyph factory interface
     virtual Blueprint::IGlyph::Ptr createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent );
-    virtual Blueprint::IGlyph::Ptr createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent );
+    //virtual Blueprint::IGlyph::Ptr createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent );
+    virtual Blueprint::IGlyph::Ptr createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent );
 
@@ -48,6 +49,7 @@ private:
     Blueprint::Edit::Ptr m_pBlueprintEdit;
     Blueprint::Site::Ptr m_pBlueprint;
     Blueprint::IEditContext* m_pNullContext;
+    Blueprint::Toolbox::Ptr m_pToolBox;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -143,6 +145,8 @@ public:
     explicit BlueprintToolbox(QWidget *parent = 0);
 
     void setToolbox( Blueprint::Toolbox::Ptr pToolbox );
+    
+    Blueprint::Toolbox::Ptr getToolbox() const { return m_pToolBox; }
     
 public slots:
     void updateToolbox();

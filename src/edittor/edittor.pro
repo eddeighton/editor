@@ -19,7 +19,7 @@ HEADERS += blueprintitemmodel.h \
            mainwindow.h \
            messages.h \
            preview.h
-FORMS += mainwindow.ui preview.ui
+FORMS += W:\root\editor\build\mainwindow.ui W:\root\editor\build\preview.ui
 SOURCES += blueprintitemmodel.cpp \
            blueprintscene.cpp \
            blueprintselectionmodel.cpp \

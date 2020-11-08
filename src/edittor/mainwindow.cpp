@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pToolActionGroup->addAction( ui->actionSelect );
     m_pToolActionGroup->addAction( ui->actionPen );
     m_pToolActionGroup->setExclusive( true );
+    
+    ui->mainToolBar->setIconSize( QSize( 48, 48 ) );
 
     ui->mainToolBar->addAction( ui->actionNew );
     ui->mainToolBar->addAction( ui->actionLoad );

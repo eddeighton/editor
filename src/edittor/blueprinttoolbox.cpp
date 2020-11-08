@@ -193,6 +193,12 @@ void FlowView::FlowItem::updatePosition( int x, int y, float fWidth, float fHeig
 }
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+static float g_fItemWidth = 128.0f;
+static float g_fItemHeight = 128.0f;
+static float g_fItemSpacing = 8.0f;
+static float g_fSelectionWidth = 2.0f;
+static QColor g_selectionColour( 0,0,255 );
+static QColor g_selectionBackground( 0,0,150,100 );
 FlowView::FlowView( BlueprintToolbox& toolbox, Blueprint::Toolbox::Palette::Ptr pPalette ) 
     :   QGraphicsView( &toolbox ),
         m_toolBox( toolbox ),
@@ -202,10 +208,21 @@ FlowView::FlowView( BlueprintToolbox& toolbox, Blueprint::Toolbox::Palette::Ptr 
     setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     setTransformationAnchor( QGraphicsView::AnchorViewCenter );
     
+    Blueprint::Toolbox::Ptr pToolBox = toolbox.getToolbox();
+    if( pToolBox )
+    {
+        pToolBox->getConfigValue( ".toolbox.item.width", g_fItemWidth );
+        pToolBox->getConfigValue( ".toolbox.item.height", g_fItemHeight );
+        pToolBox->getConfigValue( ".toolbox.item.spacing", g_fItemSpacing );
+        pToolBox->getConfigValue( ".toolbox.selection.width", g_fSelectionWidth );
+        pToolBox->getConfigValue( ".toolbox.selection.colour", g_selectionColour );
+        pToolBox->getConfigValue( ".toolbox.selection.background", g_selectionBackground );
+    }
+    
     QPen selectionPen( Qt::SolidLine );
-    selectionPen.setWidth( 2.0f );
-    selectionPen.setBrush( QColor( 0,0,255 ) );
-    m_pSelectionRectItem = scene()->addRect( QRect(0,0,0,0), selectionPen, QBrush( QColor( 0,0,150,100 ) ) );
+    selectionPen.setWidth( g_fSelectionWidth );
+    selectionPen.setBrush( g_selectionColour );
+    m_pSelectionRectItem = scene()->addRect( QRect(0,0,0,0), selectionPen, QBrush( g_selectionBackground ) );
     m_pSelectionRectItem->setZValue( 1.0f );
     m_pSelectionRectItem->setVisible( false );
 
@@ -270,12 +287,10 @@ void FlowView::calculateLayout()
                 pSelectedItem = i->second;
         }
     }
+    
 
     //decide the stride
-    float fItemWidth = 128.0f;
-    float fItemHeight = 128.0f;
-    float fItemSpacing = 8.0f;
-    int iStride = std::max( 1.0f, viewport()->rect().width() / fItemWidth );
+    int iStride = std::max( 1.0f, viewport()->rect().width() / g_fItemWidth );
 
     //now calculate the positions and sizes
     FlowItem::PtrVector::iterator i = items.begin();
@@ -283,10 +298,10 @@ void FlowView::calculateLayout()
     for( ; i != items.end(); ++y)
     {
         for( int x = 0; x < iStride && i != items.end(); ++x, ++i )
-            (*i)->updatePosition( x, y, fItemWidth, fItemHeight, fItemSpacing );
+            (*i)->updatePosition( x, y, g_fItemWidth, g_fItemHeight, g_fItemSpacing );
     }
 
-    setSceneRect( 0.0f, 0.0f, iStride * ( fItemWidth + fItemSpacing ), y * ( fItemHeight + fItemSpacing ) );
+    setSceneRect( 0.0f, 0.0f, iStride * ( g_fItemWidth + g_fItemSpacing ), y * ( g_fItemHeight + g_fItemSpacing ) );
 
     if( pSelectedItem )
     {
@@ -477,16 +492,8 @@ void BlueprintToolbox::OnPaletteMenu( ClipboardMsg msg )
     QMenu menu( this );
 
     QObject::connect( menu.addAction( "Delete" ), &QAction::triggered, 
-        std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteClip,       this, msg ) ));
-    //QObject::connect( menu.addAction( "Delete All" ),       &QAction::triggered,
-    //    std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteAllClips,   this, msg ) ) );
-    //QObject::connect( menu.addAction( "Copy To Clipboard" ),&QAction::triggered,
-    //    std::function< void() >( std::bind( &BlueprintToolbox::On_CopyToClipboard,  this, msg ) ) );
-    //QObject::connect( menu.addAction( "Save Clip As" ),     &QAction::triggered,
-    //    std::function< void() >( std::bind( &BlueprintToolbox::On_SaveClipAs,       this, msg ) ) );
-    //                
-    //QObject::connect( menu.addAction( "Set Toolbox Dir" ),  SIGNAL(triggered()), this, SLOT(On_SetToolboxDir() )        );
-    //QObject::connect( menu.addAction( "Rescan Toolbox" ),   SIGNAL(triggered()), this, SLOT(On_RescanToolBoxDir() )     );
+        std::function< void() >( std::bind( &BlueprintToolbox::On_DeleteClip, this, msg ) ));
+    QObject::connect( menu.addAction( "Rescan Toolbox" ), SIGNAL(triggered()), this, SLOT(On_RescanToolBoxDir() ) );
 
     menu.exec( QCursor::pos() );
 }
@@ -496,26 +503,10 @@ void BlueprintToolbox::On_DeleteClip( ClipboardMsg msg )
     msg.pPalette->remove( msg.pSite );
     updateToolbox();
 }
-/*
-void BlueprintToolbox::On_DeleteAllClips( ClipboardMsg msg )
-{
-    m_pToolBox->remove( msg.pPalette );
-    updateToolbox();
-}
 
-void BlueprintToolbox::On_CopyToClipboard( ClipboardMsg msg )
-{
-    updateToolbox();
-}
-void BlueprintToolbox::On_SaveClipAs( ClipboardMsg msg )
-{
-    updateToolbox();
-}
-void BlueprintToolbox::On_SetToolboxDir()
-{
-    updateToolbox();
-}
 void BlueprintToolbox::On_RescanToolBoxDir()
 {
+    m_panels.clear();
+    m_pToolBox->reload();
     updateToolbox();
-}*/
+}

@@ -154,13 +154,7 @@ public slots:
 
     void OnPaletteMenu( ClipboardMsg msg );
     void On_DeleteClip( ClipboardMsg msg );
-    /*
-    void On_DeleteAllClips( ClipboardMsg msg );
-    void On_CopyToClipboard( ClipboardMsg msg );
-    void On_SaveClipAs( ClipboardMsg msg );
-    void On_SetToolboxDir();
     void On_RescanToolBoxDir();
-    */
 
 private:
     Blueprint::Toolbox::Ptr m_pToolBox;

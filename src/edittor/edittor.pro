@@ -18,8 +18,9 @@ HEADERS += blueprintitemmodel.h \
            mainwidget.h \
            mainwindow.h \
            messages.h \
-           preview.h
-FORMS += W:\root\editor\build\mainwindow.ui W:\root\editor\build\preview.ui
+           preview.h \
+           property.h
+FORMS += mainwindow.ui preview.ui property.ui
 SOURCES += blueprintitemmodel.cpp \
            blueprintscene.cpp \
            blueprintselectionmodel.cpp \
@@ -31,5 +32,6 @@ SOURCES += blueprintitemmodel.cpp \
            main.cpp \
            mainwidget.cpp \
            mainwindow.cpp \
-           preview.cpp
+           preview.cpp \
+           property.cpp
 RESOURCES += resources.qrc shaders.qrc textures.qrc

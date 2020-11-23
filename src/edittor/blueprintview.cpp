@@ -16,12 +16,14 @@
 #include "common/math.hpp"
 #include "common/rounding.hpp"
 #include "blueprint/factory.h"
+#include "blueprint/property.h"
 #endif
 
 #include "blueprintselectionmodel.h"
 #include "blueprintitemmodel.h"
 
 #include "preview.h"
+#include "property.h"
 
 
 namespace Ed
@@ -276,6 +278,123 @@ void BlueprintView::OnCmd_Extrude()
     pPreviewDlg->show();
 }
 
+void BlueprintView::OnCmd_AddProperty()
+{
+    ASSERT( m_pActiveContext );
+    ASSERT( m_pSelectionModel );
+    
+    Blueprint::Node::PtrCstVector nodes;
+    {
+        QModelIndexList selection = 
+            m_pSelectionModel->selectedIndexes();
+        for( const QModelIndex& index : selection )
+        {
+            Blueprint::Node::PtrCst pNode = m_pModel->getIndexNode( index );
+            nodes.push_back( pNode );
+        }
+    }
+        
+    std::string strPropertyName;
+    std::string strPropertyValue;
+    
+    //create property editor dialog
+    Property* pPropertyDlg = new Property( this, strPropertyName, strPropertyValue );
+    pPropertyDlg->setAttribute( Qt::WA_DeleteOnClose );
+    if( QDialog::Accepted == pPropertyDlg->exec() )
+    {
+        if( !strPropertyName.empty() )
+        {
+            m_pBlueprintEdit->cmd_addProperties( nodes, strPropertyName, strPropertyValue );
+        }
+        else
+        {
+            QMessageBox::warning( this,
+                                  tr( "Property Edit" ), tr( "Invalid property name" ) );
+        }
+    }
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+
+void BlueprintView::OnCmd_DelProperty()
+{
+    ASSERT( m_pActiveContext );
+    ASSERT( m_pSelectionModel );
+    
+    Blueprint::Node::PtrCstVector nodes;
+    {
+        QModelIndexList selection = 
+            m_pSelectionModel->selectedIndexes();
+        for( const QModelIndex& index : selection )
+        {
+            Blueprint::Node::PtrCst pNode = m_pModel->getIndexNode( index );
+            nodes.push_back( pNode );
+        }
+    }
+    
+    {
+        m_pSelectionModel->reset();
+        m_pActiveTool->reset();
+        SelectionSet selection;
+        setSelected( selection );
+    }
+    
+    m_pBlueprintEdit->cmd_deleteProperties( nodes );
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+
+void BlueprintView::OnCmd_EditProperty()
+{
+    ASSERT( m_pActiveContext );
+    ASSERT( m_pSelectionModel );
+    
+    std::string strPropertyName;
+    std::string strPropertyValue;
+        
+    Blueprint::Node::PtrCstVector nodes;
+    {
+        QModelIndexList selection = 
+            m_pSelectionModel->selectedIndexes();
+        for( const QModelIndex& index : selection )
+        {
+            Blueprint::Node::PtrCst pNode = m_pModel->getIndexNode( index );
+            
+            if( Blueprint::Property::PtrCst pProperty = 
+                boost::dynamic_pointer_cast< const Blueprint::Property >( pNode ) )
+            {
+                strPropertyName     = pProperty->getName();
+                strPropertyValue    = pProperty->getValue();
+            }
+            nodes.push_back( pNode );
+        }
+    }
+    
+    //create property editor dialog
+    Property* pPropertyDlg = new Property( this, strPropertyName, strPropertyValue );
+    pPropertyDlg->setAttribute( Qt::WA_DeleteOnClose );
+    if( QDialog::Accepted == pPropertyDlg->exec() )
+    {
+        if( !strPropertyName.empty() )
+        {
+            m_pBlueprintEdit->cmd_editProperties( nodes, strPropertyName, strPropertyValue );
+        }
+        else
+        {
+            QMessageBox::warning( this,
+                                  tr( "Property Edit" ), tr( "Invalid property name" ) );
+        }
+    }
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
+    
 void BlueprintView::OnSelectTool_Selector()
 {
     ASSERT( m_pActiveTool );

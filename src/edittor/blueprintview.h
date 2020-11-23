@@ -113,6 +113,11 @@ public slots:
     void OnCmd_ZoomToAll();
     void OnCmd_TabOut();
     void OnCmd_Extrude();
+    
+    //menu commands
+    void OnCmd_AddProperty();
+    void OnCmd_DelProperty();
+    void OnCmd_EditProperty();
 
     //selection
     void OnCurrentSelectionItemChanged( const QModelIndex& current, const QModelIndex& previous );

@@ -40,7 +40,7 @@ Preview::~Preview()
 void Preview::on_buttonBox_accepted()
 {
     const std::string strBlueprintFile = ui->text_output->text().toStdString();
-    if( m_pBlueprintEdit && !strBlueprintFile.empty() )
+    if( m_pBlueprintEdit )
     {
         float dExtrusion = 0.0;
         {
@@ -52,7 +52,22 @@ void Preview::on_buttonBox_accepted()
             }
         }
         const bool bConvex = ui->convex->checkState() == Qt::Checked;
-        m_pBlueprintEdit->generateExtrusion( strBlueprintFile, dExtrusion, bConvex );
+        try
+        {
+            std::set< Blueprint::IGlyph* > selection =
+                m_pBlueprintEdit->generateExtrusion( dExtrusion, bConvex );
+                
+            if( !strBlueprintFile.empty() )
+            {
+                m_pBlueprintEdit->save( selection, strBlueprintFile );
+            }
+        }
+        catch( std::runtime_error& ex )
+        {
+            QMessageBox::warning( this,
+                                  tr( "Extrusion Failed" ),
+                                  QString::fromUtf8( ex.what() ) );
+        }
     }
     else
     {

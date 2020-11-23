@@ -33,7 +33,11 @@ private slots:
     void OnEditContext( BlueprintContext msg );
     void OnModeChanged();
     void OnWindowTitleModified( QString strTitle );
+    void OnTreeViewMenu( QPoint pt );
 
+    void OnTreeViewAddProperty();
+    void OnTreeViewDelProperty();
+    void OnTreeViewEditProperty();
 private:
     Ui::MainWindow *ui;
     BlueprintItemModel* m_pBlueprintItemModel;

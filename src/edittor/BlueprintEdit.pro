@@ -22,6 +22,7 @@ SOURCES += main.cpp\
     blueprintTools.cpp \
     blueprinttoolbox.cpp \
     preview.cpp \
+    property.cpp \
     mainwidget.cpp \
     geometryengine.cpp
     
@@ -35,11 +36,13 @@ HEADERS  += mainwindow.h \
     blueprintTools.h \
     blueprinttoolbox.h \
     preview.h \
+    property.h \
     mainwidget.h \
     geometryengine.h
 
-FORMS    += W:\root\editor\build\mainwindow.ui \
-            W:\root\editor\build\preview.ui
+FORMS    += mainwindow.ui \
+            preview.ui \
+            property.ui
 
     
     

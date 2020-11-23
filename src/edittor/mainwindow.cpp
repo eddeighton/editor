@@ -217,6 +217,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->setAllColumnsShowFocus( true );
     ui->treeView->setAutoScroll( true );
+    
+    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    
+    QObject::connect( ui->treeView, SIGNAL( customContextMenuRequested(QPoint) ),
+                   this, SLOT( OnTreeViewMenu( QPoint ) ) );
 
     //load the toolbox
     {
@@ -264,6 +269,40 @@ void MainWindow::OnWindowTitleModified( QString strTitle )
 
 void MainWindow::OnBlueprintUpdate()
 {
+}
+
+void MainWindow::OnTreeViewMenu( QPoint )
+{
+    qDebug() << "MainWindow::OnPaletteMenu()";
+    
+    if( m_pBlueprintSelectionModel )
+    {
+        if( m_pBlueprintSelectionModel->hasSelection() )
+        {
+            QMenu menu( ui->treeView );
+
+            QObject::connect( menu.addAction( "Add Property" ),     SIGNAL(triggered()), ui->graphicsView, SLOT( OnCmd_AddProperty() ) );
+            QObject::connect( menu.addAction( "Edit Property" ),    SIGNAL(triggered()), ui->graphicsView, SLOT( OnCmd_EditProperty() ) );
+            QObject::connect( menu.addAction( "Delete Property" ),  SIGNAL(triggered()), ui->graphicsView, SLOT( OnCmd_DelProperty() ) );
+
+            menu.exec( QCursor::pos() );
+        }
+    }
+}
+
+void MainWindow::OnTreeViewAddProperty()
+{
+    qDebug() << "MainWindow::OnTreeViewAddProperty()";
+}
+
+void MainWindow::OnTreeViewDelProperty()
+{
+    qDebug() << "MainWindow::OnTreeViewDelProperty()";
+}
+
+void MainWindow::OnTreeViewEditProperty()
+{
+    qDebug() << "MainWindow::OnTreeViewDelProperty()";
 }
 
 void MainWindow::OnBlueprintSelected( BlueprintMsg msg )

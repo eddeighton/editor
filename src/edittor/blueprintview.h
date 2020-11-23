@@ -71,9 +71,9 @@ public:
 
     //glyph factory interface
     virtual Blueprint::IGlyph::Ptr createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent );
-    //virtual Blueprint::IGlyph::Ptr createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent );
+    virtual Blueprint::IGlyph::Ptr createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent );
     virtual Blueprint::IGlyph::Ptr createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent );
 
     void SelectContext( Blueprint::IEditContext* pNewContext );

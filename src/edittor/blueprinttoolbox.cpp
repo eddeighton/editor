@@ -44,28 +44,24 @@ Blueprint::IGlyph::Ptr ClipScene::createControlPoint( Blueprint::ControlPoint* p
         GlyphMap( m_itemMap, m_specMap ), pControlPoint, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
-/*
-Blueprint::IGlyph::Ptr ClipScene::createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent )
-{
-    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphImage( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pImage, m_pNullContext, true, m_pToolBox ) );
-    return pNewGlyph;
-}
-*/
 Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphOrigin( pParent, this, 
         GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pNullContext, true, m_pToolBox ) );
     return pNewGlyph;
 }
-
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, this, 
         GlyphMap( m_itemMap, m_specMap ), pMarkupPath, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
-
+Blueprint::IGlyph::Ptr ClipScene::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
+{
+    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, this, 
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
+    return pNewGlyph;
+}
 Blueprint::IGlyph::Ptr ClipScene::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphText( pParent, this, 

@@ -225,6 +225,98 @@ void GlyphPath::setShouldRender( bool bShouldRender )
     m_bShouldRender = bShouldRender;
 }
 
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+static QColor g_polygonColor( 155,155,155,200 );
+static float g_polygonWidth( 4.0f );
+
+void constructPolygonGroupPath( const Blueprint::MarkupPolygonGroup& polygonGroup, QPainterPath& path )
+{
+    //using Point = std::pair< float, float >;
+    //using Polygon = std::vector< Point >;
+    
+    const std::size_t szTotal = polygonGroup.getTotalPolygons();
+    for( std::size_t sz = 0U; sz != szTotal; ++sz )
+    {
+        Blueprint::MarkupPolygonGroup::Polygon polygon;
+        polygonGroup.getPolygon( sz, polygon );
+        
+        bool bFirst = true;
+        for( const Blueprint::MarkupPolygonGroup::Point& pt : polygon )
+        {
+            if( bFirst )
+            {
+                bFirst = false;
+                path.moveTo( pt.first, pt.second );
+            }
+            else
+            {
+                path.lineTo( pt.first, pt.second );
+            }
+        }
+        if( !bFirst )
+        {
+            path.closeSubpath();
+        }
+    }
+}
+
+GlyphPolygonGroup::GlyphPolygonGroup( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
+                      GlyphMap map, Blueprint::MarkupPolygonGroup* pPolygonGroup, 
+                      float fZoom, bool bShouldRender,
+                      Blueprint::Toolbox::Ptr pToolBoxPtr )
+    :   Blueprint::GlyphPolygonGroup( pPolygonGroup, pParent ),
+        Renderable( bShouldRender ),
+        m_pScene( pScene ),
+        m_map( map ),
+        m_pItem( 0u ),
+        m_pToolBoxPtr( pToolBoxPtr )
+{
+    if( m_pToolBoxPtr )
+    {
+        m_pToolBoxPtr->getConfigValue( ".glyphs.polygons.colour", g_polygonColor );
+        m_pToolBoxPtr->getConfigValue( ".glyphs.polygons.width", g_polygonWidth );
+    }
+    
+    m_fSize = g_polygonWidth / fZoom;
+    
+    //convert to painter path
+    constructPolygonGroupPath( *getMarkupPolygonGroup(), m_path );
+    QGraphicsItem* pParentItem = m_map.findItem( getMarkupPolygonGroup()->getParent() );
+    m_pItem = new QGraphicsPathItem( m_path, pParentItem );
+    if( !pParentItem ) m_pScene->addItem( m_pItem );
+    m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::SolidLine ) );
+    m_pItem->setBrush( QBrush( g_polygonColor ) );
+    m_pItem->setZValue( 1.5f );
+    m_map.insert( m_pItem, getMarkupPolygonGroup(), this );
+}
+
+GlyphPolygonGroup::~GlyphPolygonGroup()
+{
+    cleanUpItem( m_pItem, m_map, getMarkupPolygonGroup(), m_pScene );
+}
+
+void GlyphPolygonGroup::OnNewZoomLevel( float fZoom )
+{
+    m_fSize = g_polygonWidth / fZoom;
+    update();
+}
+
+void GlyphPolygonGroup::update()
+{
+    QPainterPath newPath;
+    constructPolygonGroupPath( *getMarkupPolygonGroup(), newPath );
+    m_path = newPath;
+    m_pItem->setPath( m_path );
+    m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::SolidLine ) );
+    m_pItem->setBrush( QBrush( g_polygonColor ) );
+}
+
+void GlyphPolygonGroup::setShouldRender( bool bShouldRender )
+{
+    m_bShouldRender = bShouldRender;
+}
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////

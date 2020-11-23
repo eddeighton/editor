@@ -753,14 +753,6 @@ Blueprint::IGlyph::Ptr BlueprintView::createControlPoint( Blueprint::ControlPoin
     CalculateOversizedSceneRect();
     return pNewGlyph;
 }
-/*
-Blueprint::IGlyph::Ptr BlueprintView::createImage( Blueprint::ImageSpec* pImage, Blueprint::IGlyph::Ptr pParent )
-{
-    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphImage( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pImage, m_pActiveContext, true, m_pToolBox ) );
-    return pNewGlyph;
-}
-*/
 
 Blueprint::IGlyph::Ptr BlueprintView::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
 {
@@ -773,6 +765,13 @@ Blueprint::IGlyph::Ptr BlueprintView::createMarkupPath( Blueprint::MarkupPath* p
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, m_pBlueprintScene, 
         GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_v2ZoomLevel.y(), true, m_pToolBox ) );
+    return pNewGlyph;
+}
+
+Blueprint::IGlyph::Ptr BlueprintView::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
+{
+    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, m_pBlueprintScene, 
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_v2ZoomLevel.y(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 

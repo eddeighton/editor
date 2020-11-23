@@ -176,6 +176,34 @@ private:
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+class GlyphPolygonGroup : public Blueprint::GlyphPolygonGroup, public ZoomDependent, public Renderable
+{
+public:
+    GlyphPolygonGroup( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
+               GlyphMap map, Blueprint::MarkupPolygonGroup* pPolygonGroup, float fZoom, bool bShouldRender,
+               Blueprint::Toolbox::Ptr pToolBoxPtr );
+    ~GlyphPolygonGroup();
+
+    //ZoomDependent
+    virtual void OnNewZoomLevel( float fZoom );
+
+    //Renderable
+    virtual void setShouldRender( bool bShouldRender );
+
+    //Blueprint::GlyphPath
+    virtual void update();
+
+private:
+    float m_fSize;
+    QPainterPath m_path;
+    QGraphicsScene* m_pScene;
+    GlyphMap m_map;
+    QGraphicsPathItem* m_pItem;
+    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
+};
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 class GlyphOrigin : public Blueprint::GlyphOrigin, public Selectable, public Renderable
 {
 public:

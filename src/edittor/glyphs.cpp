@@ -287,7 +287,15 @@ GlyphPolygonGroup::GlyphPolygonGroup( Blueprint::IGlyph::Ptr pParent, QGraphicsS
     m_pItem = new QGraphicsPathItem( m_path, pParentItem );
     if( !pParentItem ) m_pScene->addItem( m_pItem );
     m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::SolidLine ) );
-    m_pItem->setBrush( QBrush( g_polygonColor ) );
+    
+    if( getMarkupPolygonGroup()->isPolygonsFilled() )
+    {
+        m_pItem->setBrush( QBrush( g_polygonColor ) );
+    }
+    else
+    {
+        m_pItem->setBrush( QBrush( Qt::NoBrush ) );
+    }
     m_pItem->setZValue( 1.5f );
     m_map.insert( m_pItem, getMarkupPolygonGroup(), this );
 }
@@ -310,7 +318,14 @@ void GlyphPolygonGroup::update()
     m_path = newPath;
     m_pItem->setPath( m_path );
     m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::SolidLine ) );
-    m_pItem->setBrush( QBrush( g_polygonColor ) );
+    if( getMarkupPolygonGroup()->isPolygonsFilled() )
+    {
+        m_pItem->setBrush( QBrush( g_polygonColor ) );
+    }
+    else
+    {
+        m_pItem->setBrush( QBrush( Qt::NoBrush ) );
+    }
 }
 
 void GlyphPolygonGroup::setShouldRender( bool bShouldRender )

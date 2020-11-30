@@ -39,6 +39,7 @@ class BlueprintView : public QGraphicsView, public Blueprint::GlyphFactory
     friend class SelectTool;
     friend class PenTool;
     friend class ContextTool;
+    friend class PropertyTool;
 
     enum InteractionMode
     {
@@ -129,6 +130,7 @@ public slots:
     //tools
     void OnSelectTool_Selector();
     void OnSelectTool_Pen();
+    void OnSelectTool_Property();
     
     //modes
     void OnSelectMode_Area();
@@ -169,7 +171,7 @@ private:
 
     SelectTool m_selectTool;
     PenTool m_penTool;
-    //ContextTool m_contextTool;
+    PropertyTool m_propertyTool;
     Tool* m_pActiveTool;
     Blueprint::Toolbox::Ptr m_pToolBox;
     Blueprint::IEditContext::ToolMode m_toolMode = Blueprint::IEditContext::eArea;

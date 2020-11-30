@@ -162,6 +162,31 @@ protected:
     std::auto_ptr< Selection_Interaction > m_pSelection;
     Blueprint::IInteraction::Ptr m_pInteraction;
     ToolMode m_toolMode;
+    bool m_bMoved;
+};
+
+class PropertyTool : public Tool
+{
+public:
+    PropertyTool( BlueprintView& view );
+
+    virtual void mouseHover( QMouseEvent* event );
+    virtual void mousePressEvent( QMouseEvent *event );
+    virtual void mouseMoveEvent( QMouseEvent *event );
+    virtual void mouseReleaseEvent( QMouseEvent *event );
+    virtual void keyPressEvent( QKeyEvent *event );
+    virtual void reset();
+    
+    virtual Blueprint::IEditContext::ToolType getToolType() const { return Blueprint::IEditContext::eDraw; }
+    virtual Blueprint::Site::Ptr GetInteractionSite() const 
+    {
+        return m_pInteraction ? m_pInteraction->GetInteractionSite() : Blueprint::Site::Ptr();
+    }
+    
+protected:
+    BlueprintView& m_view;
+    std::auto_ptr< Selection_Interaction > m_pSelection;
+    Blueprint::IInteraction::Ptr m_pInteraction;
 };
 /*
 class ContextTool : public PenTool

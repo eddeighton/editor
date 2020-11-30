@@ -45,6 +45,7 @@ BlueprintView::BlueprintView(QWidget *parent) :
     m_interactionMode( eNone ),
     m_selectTool( *this ),
     m_penTool( *this ),
+    m_propertyTool( *this ),
     m_pActiveTool( &m_selectTool ),
     m_iQuantisation( 16 )
 {
@@ -407,6 +408,13 @@ void BlueprintView::OnSelectTool_Pen()
     ASSERT( m_pActiveTool );
     m_pActiveTool->reset();
     m_pActiveTool = &m_penTool;
+}
+
+void BlueprintView::OnSelectTool_Property()
+{
+    ASSERT( m_pActiveTool );
+    m_pActiveTool->reset();
+    m_pActiveTool = &m_propertyTool;
 }
 
 void BlueprintView::OnSelectMode_Area()
@@ -939,10 +947,13 @@ void BlueprintView::SetZoom( QVector2D v2NewZoomLevel )
 
 void BlueprintView::DoZoom( float fAmt )
 {
-    ViewportAnchor oldAnchor = transformationAnchor();
-    setTransformationAnchor( AnchorUnderMouse );
-    SetZoom( QVector2D( m_v2ZoomLevel.y() * fAmt, m_v2ZoomLevel.y() * fAmt  ) );
-    setTransformationAnchor( oldAnchor );
+    if( m_interactionMode == eNone )
+    {
+        ViewportAnchor oldAnchor = transformationAnchor();
+        setTransformationAnchor( AnchorUnderMouse );
+        SetZoom( QVector2D( m_v2ZoomLevel.y() * fAmt, m_v2ZoomLevel.y() * fAmt  ) );
+        setTransformationAnchor( oldAnchor );
+    }
 }
 
 void BlueprintView::CalculateOversizedSceneRect()

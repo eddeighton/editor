@@ -358,6 +358,7 @@ void PenTool::mousePressEvent(QMouseEvent *event)
         m_toolMode = eDelete;
         m_pSelection.reset( new Selection_Rect( m_view, Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(),
             m_view.mapToScene( event->pos() ), QColor( 200, 0, 0, 100) ) );
+        m_bMoved = false;
     }
 }
 void PenTool::mouseMoveEvent(QMouseEvent *event)
@@ -396,6 +397,7 @@ void PenTool::mouseMoveEvent(QMouseEvent *event)
             {
                 m_pSelection->update( m_view.mapToScene( event->pos() ) );
                 m_view.setCursor( Qt::ArrowCursor );
+                m_bMoved = true;
             }
             break;
     }
@@ -405,7 +407,10 @@ void PenTool::mouseReleaseEvent(QMouseEvent*)
     switch( m_toolMode )
     {
         case eDelete:
-            m_view.OnCmd_Delete();
+            if( m_bMoved )
+            {
+                m_view.OnCmd_Delete();
+            }
             break;
         default:
             break;
@@ -421,6 +426,50 @@ void PenTool::reset()
     m_pSelection.reset();
 }
 
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+PropertyTool::PropertyTool( BlueprintView& view )
+    :   m_view( view )
+{
+}
+
+void PropertyTool::mouseHover( QMouseEvent* event )
+{
+    if( m_view.findSelectableTopmostGlyph( event->pos() ) )
+        m_view.setCursor( Qt::SizeAllCursor );
+    else
+        m_view.setCursor( Qt::CrossCursor );
+}
+void PropertyTool::mousePressEvent(QMouseEvent *event)
+{
+    ASSERT( m_view.m_pActiveContext );
+    
+    const QVector2D q = m_view.calculateQuantisation();
+  
+    m_view.setCursor( Qt::ArrowCursor );
+    m_pSelection.reset( new Selection_Rect( m_view, Selection::getSelectionMode( event ), m_view.m_v2ZoomLevel.y(),
+        m_view.mapToScene( event->pos() ), QColor( 200, 0, 0, 100) ) );
+}
+void PropertyTool::mouseMoveEvent(QMouseEvent *event)
+{
+    if( m_pSelection.get() )
+    {
+        m_pSelection->update( m_view.mapToScene( event->pos() ) );
+        m_view.setCursor( Qt::ArrowCursor );
+    }
+}
+void PropertyTool::mouseReleaseEvent(QMouseEvent*)
+{
+    reset();
+}
+void PropertyTool::keyPressEvent(QKeyEvent*)
+{
+}
+void PropertyTool::reset()
+{
+    m_pInteraction.reset();
+    m_pSelection.reset();
+}
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 //ContextTool::ContextTool( BlueprintView& view )

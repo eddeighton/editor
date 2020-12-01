@@ -372,7 +372,7 @@ GlyphOrigin::GlyphOrigin( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene
     
     QGraphicsItem* pParentItem = m_map.findItem( getOrigin()->getParent() );
     {
-        constructQPainterPath( getOrigin()->getPolygon()->getCmds(), m_path );
+        constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), m_path );
         
         m_pPathItem = new QGraphicsPathItem( m_path, pParentItem );
         if( !pParentItem ) m_pScene->addItem( m_pPathItem );
@@ -458,7 +458,7 @@ void GlyphOrigin::update()
 {
     {
         QPainterPath newPath;
-        constructQPainterPath( getOrigin()->getPolygon()->getCmds(), newPath );
+        constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), newPath );
         m_path = newPath;
         m_pPathItem->setPath( m_path );
     }

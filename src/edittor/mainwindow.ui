@@ -81,7 +81,6 @@
     <addaction name="separator"/>
     <addaction name="actionArea"/>
     <addaction name="actionContour"/>
-    <addaction name="actionConnection"/>
     <addaction name="separator"/>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
@@ -227,11 +226,6 @@
   <action name="actionContour">
    <property name="text">
     <string>Contour</string>
-   </property>
-  </action>
-  <action name="actionConnection">
-   <property name="text">
-    <string>Connection</string>
    </property>
   </action>
   <action name="actionExtrude">

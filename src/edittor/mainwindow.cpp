@@ -53,11 +53,11 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->actionArea->setCheckable( true );
     ui->actionContour->setCheckable( true );
-    ui->actionConnection->setCheckable( true );
+    //ui->actionConnection->setCheckable( true );
     
     m_pModeActionGroup->addAction( ui->actionArea );
     m_pModeActionGroup->addAction( ui->actionContour );
-    m_pModeActionGroup->addAction( ui->actionConnection );
+    //m_pModeActionGroup->addAction( ui->actionConnection );
     m_pModeActionGroup->setExclusive( true );
     
     ui->actionMode_Bitmap->setCheckable( true );
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction( ui->actionArea );
     ui->mainToolBar->addAction( ui->actionContour );
-    ui->mainToolBar->addAction( ui->actionConnection );
+    //ui->mainToolBar->addAction( ui->actionConnection );
     
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction( ui->actionMode_Bitmap );
@@ -153,8 +153,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionArea->setShortcut( Qt::Key_3 );
     QObject::connect( ui->actionContour,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Contour() ));
     ui->actionContour->setShortcut( Qt::Key_4 );
-    QObject::connect( ui->actionConnection,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Connection() ));
-    ui->actionConnection->setShortcut( Qt::Key_5 );
+    //QObject::connect( ui->actionConnection,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectMode_Connection() ));
+    //ui->actionConnection->setShortcut( Qt::Key_5 );
     
     QObject::connect( ui->actionCut,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Cut() ));
     ui->actionCut->setShortcut( QKeySequence( "Ctrl+x" ) );

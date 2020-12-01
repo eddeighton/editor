@@ -135,7 +135,7 @@ public slots:
     //modes
     void OnSelectMode_Area();
     void OnSelectMode_Contour();
-    void OnSelectMode_Connection();
+    //void OnSelectMode_Connection();
     
     //rotate and flip
     void OnRotateLeft();

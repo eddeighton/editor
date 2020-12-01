@@ -429,11 +429,11 @@ void BlueprintView::OnSelectMode_Contour()
     m_toolMode = Blueprint::IEditContext::eContour;
 }
 
-void BlueprintView::OnSelectMode_Connection()
-{
-    ASSERT( m_pActiveTool );
-    m_toolMode = Blueprint::IEditContext::eConnection;
-}
+//void BlueprintView::OnSelectMode_Connection()
+//{
+//    ASSERT( m_pActiveTool );
+//    //m_toolMode = Blueprint::IEditContext::eConnection;
+//}
 
 void BlueprintView::OnRotateLeft()
 {

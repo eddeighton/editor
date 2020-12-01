@@ -44,7 +44,9 @@ FORMS    += mainwindow.ui \
             preview.ui \
             property.ui
 
-    
+################################################
+# wykobi path
+WYKOBI_PATH = W:\root\thirdparty_x64\wykobi
     
 ################################################
 # common stuff
@@ -98,6 +100,10 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$BOOST_LIB_PATH -llibboost_i
 
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$BOOST_LIB_PATH/libboost_iostreams-vc166-mt-x64-1_73.lib
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$BOOST_LIB_PATH/libboost_iostreams-vc166-mt-gd-x64-1_73.lib
+
+################################################
+## wykobi
+INCLUDEPATH += $$WYKOBI_PATH/src
 
 ################################################
 ## common lib

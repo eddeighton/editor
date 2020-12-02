@@ -541,11 +541,11 @@ void BlueprintView::OnSelectionChanged( const QItemSelection& selected, const QI
     }
 }
 
-void BlueprintView::setViewMode( bool bBitmap, bool bCellComplex, bool bClearance )
+void BlueprintView::setViewMode( bool bArrangement, bool bCellComplex, bool bClearance )
 {
-    qDebug() << "OnBitmapChanged called: " << bBitmap << " " << bCellComplex << " " << bClearance;
+    qDebug() << "OnBitmapChanged called: " << bArrangement << " " << bCellComplex << " " << bClearance;
     
-    m_pBlueprintEdit->setViewMode( bBitmap, bCellComplex, bClearance );
+    m_pBlueprintEdit->setViewMode( bArrangement, bCellComplex, bClearance );
     
     update();
     invalidateScene();
@@ -560,6 +560,7 @@ void BlueprintView::SelectContext( Blueprint::IEditContext* pNewContext )
 
     Blueprint::IEditContext* pOldContext = m_pActiveContext;
     m_pActiveContext = pNewContext;
+    m_pActiveContext->activated();
 
     {
         SpecMap::const_iterator iFind = m_specMap.find( pOldContext->getOrigin() );

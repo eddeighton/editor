@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->dockProperties->toggleViewAction()->setIcon(    QIcon( ":/art/dialog.png" ) );
     ui->dockToolbox->toggleViewAction()->setIcon(       QIcon( ":/art/folder.png" ) );
 
-    ui->actionMode_Bitmap->setIcon(         QIcon( ":/art/joystick.png" ) );
+    ui->actionMode_Arrangement->setIcon(    QIcon( ":/art/blueprint.png" ) );
     ui->actionMode_CellComplex->setIcon(    QIcon( ":/art/scan.png" ) );
     ui->actionMode_Clearance->setIcon(      QIcon( ":/art/rook.png" ) );
     
@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //m_pModeActionGroup->addAction( ui->actionConnection );
     m_pModeActionGroup->setExclusive( true );
     
-    ui->actionMode_Bitmap->setCheckable( true );
+    ui->actionMode_Arrangement->setCheckable( true );
     ui->actionMode_CellComplex->setCheckable( true );
     ui->actionMode_Clearance->setCheckable( true );
     
@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->mainToolBar->addAction( ui->actionConnection );
     
     ui->mainToolBar->addSeparator();
-    ui->mainToolBar->addAction( ui->actionMode_Bitmap );
+    ui->mainToolBar->addAction( ui->actionMode_Arrangement );
     ui->mainToolBar->addAction( ui->actionMode_CellComplex );
     ui->mainToolBar->addAction( ui->actionMode_Clearance );
     
@@ -173,7 +173,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( ui->actionSelect_All,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_SelectAll() ));
     ui->actionSelect_All->setShortcut( QKeySequence( "Ctrl+a" ) );
     
-    QObject::connect( ui->actionMode_Bitmap,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_Arrangement,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     QObject::connect( ui->actionMode_CellComplex,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     QObject::connect( ui->actionMode_Clearance,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     
@@ -313,12 +313,12 @@ void MainWindow::OnBlueprintSelected( BlueprintMsg msg )
 void MainWindow::OnModeChanged()
 {
     if( ui->graphicsView && 
-        ui->actionMode_Bitmap && 
+        ui->actionMode_Arrangement && 
         ui->actionMode_CellComplex && 
         ui->actionMode_Clearance )
     {
         ui->graphicsView->setViewMode( 
-            ui->actionMode_Bitmap->isChecked(),
+            ui->actionMode_Arrangement->isChecked(),
             ui->actionMode_CellComplex->isChecked(),
             ui->actionMode_Clearance->isChecked() );
     }

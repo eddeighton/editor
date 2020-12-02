@@ -117,7 +117,7 @@
     <addaction name="actionZoom_Out"/>
     <addaction name="actionTab_Out"/>
     <addaction name="separator"/>
-    <addaction name="actionMode_Bitmap"/>
+    <addaction name="actionMode_Arrangement"/>
     <addaction name="actionMode_CellComplex"/>
     <addaction name="actionMode_Clearance"/>
     <addaction name="separator"/>
@@ -314,9 +314,9 @@
    </property>
   </action>
   
-  <action name="actionMode_Bitmap">
+  <action name="actionMode_Arrangement">
    <property name="text">
-    <string>Bitmap</string>
+    <string>Arrangement</string>
    </property>
   </action>
   <action name="actionMode_CellComplex">

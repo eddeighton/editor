@@ -125,7 +125,7 @@ public slots:
     void OnSelectionChanged( const QItemSelection& selected, const QItemSelection& deselected );
 
     //view modes
-    void setViewMode( bool bBitmap, bool bCellComplex, bool bClearance );
+    void setViewMode( bool bArrangement, bool bCellComplex, bool bClearance );
 
     //tools
     void OnSelectTool_Selector();

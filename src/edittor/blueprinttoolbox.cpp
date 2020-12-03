@@ -24,6 +24,16 @@ ClipScene::ClipScene( QWidget *parent) :
 void ClipScene::setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pToolBox )
 {
     m_pToolBox = pToolBox;
+    
+    float fScaling = 1.0f;
+    if( m_pToolBox )
+    {
+        m_pToolBox->getConfigValue( ".toolbox.item.width", m_fDeviceWidth );
+        m_pToolBox->getConfigValue( ".toolbox.item.scaling", fScaling );
+    }
+    
+    m_fDeviceWidth *= fScaling; //artificially increase so that control points are smaller
+    
     if( pSite )
     {
         m_pBlueprintEdit.reset();
@@ -33,15 +43,28 @@ void ClipScene::setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pTo
         m_pBlueprint = pSite;
         m_pBlueprint->init();
         m_pBlueprintEdit = Blueprint::Edit::create( *this, m_pBlueprint );
-        setSceneRect( QRectF() );
+        m_pBlueprintEdit->setViewMode( true, false, false );
+        m_pBlueprintEdit->activated();
     }
 }
 
+void ClipScene::calculateSceneRect()
+{
+    QRectF rect;
+    for( ItemMap::const_iterator i = m_itemMap.begin(),
+         iEnd = m_itemMap.end(); i!=iEnd; ++i )
+    {
+        rect = rect.united( i->first->sceneBoundingRect() );
+    }
+    rect = rect.marginsAdded( QMargins( 2, 2, 2, 2 ) );
+    setSceneRect( rect );
+}
+    
 //glyph factory interface
 Blueprint::IGlyph::Ptr ClipScene::createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphControlPoint( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pControlPoint, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
@@ -53,13 +76,13 @@ Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blue
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, 128.0f / this->sceneRect().height(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
 }
 Blueprint::IGlyph::Ptr ClipScene::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
@@ -69,55 +92,8 @@ Blueprint::IGlyph::Ptr ClipScene::createMarkupText( Blueprint::MarkupText* pMark
     return pNewGlyph;
 }
 
-void ClipScene::drawBackground(QPainter *painter, const QRectF &rect)
+void ClipScene::drawBackground(QPainter* , const QRectF& )
 {
-    float fXStep = 1.0f;
-    while( fXStep / 16.0f < ( 1 ) )
-        fXStep *= 2.0f;
-    float fYStep = 1.0f;
-    while( fYStep / 16.0f < ( 1 ) )
-        fYStep *= 2.0f;
-
-    painter->fillRect( rect, QColor( 25, 25, 75 ) );
-
-    static const QColor clr1( 100, 100, 100, 125 );
-    static const QColor clr2( 225, 225, 225, 125 );
-
-    //grid lines
-    QPen oldPen = painter->pen();
-    {
-        QPen gridPen;
-        gridPen.setStyle( Qt::DotLine );
-        gridPen.setWidth( 0.5f );
-        painter->setPen( gridPen );
-
-        const float fQuantLeft    =   Math::quantize< float >( rect.left(),      fXStep * 4.0f );
-        const float fQuantRight   =   Math::quantize< float >( rect.right(),     fXStep ) + fXStep * 4.0f;
-        const float fQuantTop     =   Math::quantize< float >( rect.top(),       fYStep * 4.0f );
-        const float fQuantBottom  =   Math::quantize< float >( rect.bottom(),    fYStep ) + fYStep * 4.0f;
-
-        unsigned int uiX = 0u;
-        for( float x = fQuantLeft; x <= fQuantRight; x += fXStep, ++uiX )
-        {
-            if( uiX % 4 )
-                gridPen.setColor( clr1 );
-            else
-                gridPen.setColor( clr2 );
-            painter->setPen( gridPen );
-            painter->drawLine( QPoint( x, fQuantTop ), QPoint( x, fQuantBottom ) );
-        }
-        unsigned int uiY = 0u;
-        for( float y = fQuantTop; y <= fQuantBottom; y += fYStep, ++uiY )
-        {
-            if( uiY % 4 )
-                gridPen.setColor( clr1 );
-            else
-                gridPen.setColor( clr2 );
-            painter->setPen( gridPen );
-            painter->drawLine( QPoint( fQuantLeft, y ), QPoint( fQuantRight, y ) );
-        }
-    }
-    painter->setPen( oldPen );
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -127,38 +103,65 @@ FlowView::FlowItem::FlowItem( FlowView& view, Blueprint::Site::Ptr pSite, Bluepr
         m_pSite( pSite ),
         m_pPalette( pPalette )
 {
-    QPixmap buffer( 128, 128 );
+    
+    QColor bkgrnd( 255, 255, 255 );
+    int itemWidth   = 256;
+    int itemHeight  = 256;
+    QColor textColour( 0,0,0 );
+    std::string strFont = "Times";
+    int fontSize = 8;
+    
+    Blueprint::Toolbox::Ptr pToolBox = view.getToolbox();
+    if( pToolBox )
+    {
+        pToolBox->getConfigValue( ".toolbox.item.background.colour", bkgrnd );
+        pToolBox->getConfigValue( ".toolbox.item.width", itemWidth );
+        pToolBox->getConfigValue( ".toolbox.item.height", itemHeight );
+        pToolBox->getConfigValue( ".toolbox.item.text.colour", textColour );
+        pToolBox->getConfigValue( ".toolbox.item.text.font", strFont );
+        pToolBox->getConfigValue( ".toolbox.item.text.fontsize", fontSize );
+    }
+    
+    QPixmap buffer( itemWidth, itemHeight );
     {
         ClipScene tempScene;
         tempScene.setSite( pSite, m_view.m_toolBox.getToolbox() );
+        
         QPainter painter;
         //painter.setRenderHint( QPainter::HighQualityAntialiasing, true );
-        painter.begin( &buffer );
-        painter.fillRect( 0, 0, 128, 128, QColor( 0,0,0) );
-        tempScene.render(&painter );
-        painter.resetTransform();
-        painter.setPen( QColor( 255, 255, 255 ) );
         
-        std::string strName = pSite->Blueprint::Node::getName();
+        painter.begin( &buffer );
         {
-            const std::vector< std::string > prefixes =
+            //fill the square
             {
-                std::string( "room_shape_" ),
-                std::string( "room_" ),
-                std::string( "object_" ),
-                std::string( "ship_" ),
-            };
-            for( const std::string& prefix : prefixes )
+                painter.fillRect( 0, 0, itemWidth, itemHeight, bkgrnd );
+            }
+        
+            //paint the clip scene
             {
-                std::string::const_iterator iSearch =
-                    std::search( strName.begin(), strName.end(), 
-                                  prefix.begin(), prefix.end() );
-                if( iSearch == strName.begin() )
-                    strName.erase( 0, prefix.size() );
+                tempScene.calculateSceneRect();
+                tempScene.render( &painter );
+            }
+            
+            //render useful text over the top
+            {
+                painter.setPen( textColour );
+               
+                static QFont newFont( strFont.c_str(), fontSize, QFont::Bold, false );
+                painter.setFont( newFont );
+                
+                std::string strName = pSite->Blueprint::Node::getName();
+                for( auto& c : strName )
+                {
+                    if( c == '_' )
+                        c = ' ';
+                }
+                
+                QRectF bounds( 0, 0, itemWidth, itemHeight );
+                painter.drawText( bounds, Qt::AlignCenter | Qt::TextWordWrap, strName.c_str() ); //
             }
         }
         
-        painter.drawText( 16, 32, 100, 90, Qt::TextWordWrap, strName.c_str() );
         painter.end();
     }
 
@@ -187,10 +190,11 @@ void FlowView::FlowItem::updatePosition( int x, int y, float fWidth, float fHeig
     m_pImageItem->setTransform( QTransform::fromScale( 
         fWidth / bounds.width(), fHeight / bounds.height() ) );
 }
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-static float g_fItemWidth = 128.0f;
-static float g_fItemHeight = 128.0f;
+static float g_fItemWidth = 256.0f;
+static float g_fItemHeight = 256.0f;
 static float g_fItemSpacing = 8.0f;
 static float g_fSelectionWidth = 2.0f;
 static QColor g_selectionColour( 0,0,255 );
@@ -227,6 +231,11 @@ FlowView::FlowView( BlueprintToolbox& toolbox, Blueprint::Toolbox::Palette::Ptr 
 
 FlowView::~FlowView()
 {
+}
+
+Blueprint::Toolbox::Ptr FlowView::getToolbox() const 
+{ 
+    return m_toolBox.getToolbox(); 
 }
 
 void FlowView::updateClips()

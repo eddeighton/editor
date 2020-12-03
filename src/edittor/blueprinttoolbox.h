@@ -28,6 +28,7 @@ public:
     explicit ClipScene(QWidget *parent = 0);
 
     void setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pToolBox );
+    void calculateSceneRect();
 
     //glyph factory interface
     virtual Blueprint::IGlyph::Ptr createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent );
@@ -50,6 +51,8 @@ private:
     Blueprint::Site::Ptr m_pBlueprint;
     Blueprint::IEditContext* m_pNullContext;
     Blueprint::Toolbox::Ptr m_pToolBox;
+    
+    float m_fDeviceWidth;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -89,6 +92,7 @@ public:
     explicit FlowView( BlueprintToolbox& toolbox, Blueprint::Toolbox::Palette::Ptr pPalette );
     ~FlowView();
 
+    Blueprint::Toolbox::Ptr getToolbox() const;
     Blueprint::Toolbox::Palette::Ptr getPalette() const { return m_pPalette; }
 
     void updateClips();

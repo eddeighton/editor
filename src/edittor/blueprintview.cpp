@@ -935,7 +935,7 @@ void BlueprintView::keyPressEvent(QKeyEvent *event)
 void BlueprintView::SetZoom( QVector2D v2NewZoomLevel )
 {
     m_v2ZoomLevel = v2NewZoomLevel;
-    setTransform( QTransform::fromScale( m_v2ZoomLevel.x(), -m_v2ZoomLevel.y() ) );
+    setTransform( QTransform::fromScale( m_v2ZoomLevel.x(), m_v2ZoomLevel.y() ) );
     for( ItemMap::const_iterator i = m_itemMap.begin(),
          iEnd = m_itemMap.end(); i!=iEnd; ++i )
     {
@@ -1007,8 +1007,8 @@ void BlueprintView::CalculateRulerItems()
 
     const float fQuantLeft    =   Math::quantize< float >( rect.left(),      fXStep );
     const float fQuantRight   =   Math::quantize< float >( rect.right(),     fXStep ) + fXStep;
-    const float fQuantTop     =   Math::quantize< float >( rect.bottom(),    fYStep );
-    const float fQuantBottom  =   Math::quantize< float >( rect.top(),       fYStep ) + fYStep;
+    const float fQuantTop     =   Math::quantize< float >( rect.top(),       fYStep );
+    const float fQuantBottom  =   Math::quantize< float >( rect.bottom(),    fYStep ) + fYStep;
 
     {
         TextItemVector::iterator xIter = m_rulerVertItems.begin();

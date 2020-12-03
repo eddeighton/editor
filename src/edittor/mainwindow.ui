@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>812</width>
-    <height>724</height>
+    <width>2000</width>
+    <height>1500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -194,7 +194,7 @@
     <string>Properties</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_2">

@@ -144,6 +144,8 @@ public slots:
     void OnFlipVeritcally();
 
     void OnSetQuantise( int iQuantisation );
+    
+    void showEvent( QShowEvent* pEvent );
 protected:
     void mouseHover( QMouseEvent* event );//fake
 
@@ -182,6 +184,8 @@ private:
     QVector2D m_v2ZoomLevel;
     int m_iQuantisation;
     static const float m_fZoomRate;
+    float m_fDefaultZoom;
+    bool m_bInitialising;
 };
 
 #endif // BLUEPRINTVIEW_H

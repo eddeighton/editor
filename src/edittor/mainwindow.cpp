@@ -46,6 +46,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionFlip_Horizontal->setIcon( QIcon( ":/art/arrow_right.png" ) );
     ui->actionFlip_Vertical->setIcon( QIcon( ":/art/arrow_up.png" ) );
     
+    ui->actionRotate_Left->setShortcut(         QKeySequence( Qt::Key_Left ) );
+    ui->actionRotate_Right->setShortcut(        QKeySequence( Qt::Key_Right ) );
+    ui->actionFlip_Horizontal->setShortcut(     QKeySequence( Qt::Key_Down ) );
+    ui->actionFlip_Vertical->setShortcut(       QKeySequence( Qt::Key_Up ) );
+    
     //ui->actionSelect->setIcon( QIcon( ":/art/disk_saveas.png" ) );
     ui->actionSelect->setCheckable( true );
     ui->actionPen->setIcon( QIcon( ":/art/pen_blue.png" ) );
@@ -167,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionDelete->setShortcut( Qt::Key_Delete );
 
     QObject::connect( ui->actionZoom_Out,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_ZoomToAll() ));
-    ui->actionZoom_Out->setShortcut( QKeySequence( "Shift+z" ) );
+    ui->actionZoom_Out->setShortcut( QKeySequence( "z" ) );
     QObject::connect( ui->actionTab_Out,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_TabOut() ));
     ui->actionTab_Out->setShortcut( Qt::Key_Tab );
     QObject::connect( ui->actionSelect_All,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_SelectAll() ));
@@ -213,7 +218,6 @@ MainWindow::MainWindow(QWidget *parent) :
                       this, &MainWindow::OnWindowTitleModified );
 
     ui->graphicsView->setModel( m_pBlueprintSelectionModel, m_pBlueprintItemModel );
-    ui->graphicsView->OnNewBlueprint();
 
     ui->treeView->setAllColumnsShowFocus( true );
     ui->treeView->setAutoScroll( true );
@@ -255,6 +259,11 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->toolBox, SLOT( onCurrentPaletteChanged(int) ) );
 
     qDebug() << "MainWindow::ctor complete";
+    
+    //QObject::connect( 
+    //    ui->graphicsView, SIGNAL( show() ), 
+    //    ui->graphicsView, SLOT( onShow() ) );
+    
 }
 MainWindow::~MainWindow()
 {

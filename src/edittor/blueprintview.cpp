@@ -47,22 +47,45 @@ BlueprintView::BlueprintView(QWidget *parent) :
     m_penTool( *this ),
     m_propertyTool( *this ),
     m_pActiveTool( &m_selectTool ),
-    m_iQuantisation( 16 )
+    m_iQuantisation( 16 ),
+    m_fDefaultZoom( 256.0f ),
+    m_bInitialising( true )
 {
     //setup the scene
     m_pBlueprintScene = new BlueprintScene;
     setScene( m_pBlueprintScene );
     CalculateOversizedSceneRect();
-    DoZoom( 1.0f );
+    SetZoom( m_v2ZoomLevel );
     CalculateRulerItems();
+    
+    //OnNewBlueprint() is called once mainwindow has finished initialising - m_pToolBox will then be set
+    //so that defaults can be read in...
 }
 
 BlueprintView::~BlueprintView()
 {
 }
 
+void BlueprintView::showEvent( QShowEvent* pEvent )
+{
+    QGraphicsView::showEvent( pEvent );
+    VERIFY_RTE( m_pToolBox );
+    if( m_bInitialising )
+    {
+        m_bInitialising = false;
+        OnNewBlueprint();
+    }
+}
+
 void BlueprintView::OnNewBlueprint()
 {
+    VERIFY_RTE( m_pToolBox );
+    if( m_pToolBox )
+    {
+        m_pToolBox->getConfigValue( ".view.zoom.default", m_fDefaultZoom );
+        m_pToolBox->getConfigValue( ".view.quantise.default", m_iQuantisation );
+    }
+    
     m_pActiveContext = 0u;
     m_pBlueprintEdit.reset();
     VERIFY_RTE( m_itemMap.empty() );
@@ -81,6 +104,8 @@ void BlueprintView::OnNewBlueprint()
     OnBlueprintSelected( BlueprintMsg( m_pBlueprint ) );
     
     OnWindowTitleModified( "NewBlueprint" );
+    
+    OnCmd_ZoomToAll();
 }
 
 void BlueprintView::OnLoadBlueprint()
@@ -125,6 +150,8 @@ void BlueprintView::OnLoadBlueprint()
             OnBlueprintSelected( BlueprintMsg( m_pBlueprint ) );
         }
     }
+    
+    OnCmd_ZoomToAll();
 }
 
 void BlueprintView::OnSaveBlueprint()
@@ -255,7 +282,7 @@ void BlueprintView::OnCmd_SelectAll()
 void BlueprintView::OnCmd_ZoomToAll()
 {
     ASSERT( m_pActiveTool );
-    QRectF rect;
+    QRectF rect( -m_fDefaultZoom / 2.0f, -m_fDefaultZoom / 2.0f, m_fDefaultZoom, m_fDefaultZoom );
     for( ItemMap::const_iterator i = m_itemMap.begin(),
          iEnd = m_itemMap.end(); i!=iEnd; ++i )
     {

@@ -443,11 +443,11 @@ void GlyphOrigin::updateColours()
         m_pItemY->setVisible( false );
     }
     
-    const Blueprint::Transform& bTrans = getOrigin()->getTransform();
+    const Blueprint::Matrix& originMatrix = getOrigin()->getTransform();
     const QTransform transform( 
-        bTrans.M11(),   bTrans.M12(),
-        bTrans.M21(),   bTrans.M22(),
-        bTrans.X(),     bTrans.Y() );
+        originMatrix.M11(),   originMatrix.M12(),
+        originMatrix.M21(),   originMatrix.M22(),
+        originMatrix.X(),     originMatrix.Y() );
     
     m_pPathItem->setTransform( transform );
     m_pItemX->setTransform( transform );

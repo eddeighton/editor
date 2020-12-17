@@ -42,9 +42,7 @@ void ClipScene::setSite( Blueprint::Site::Ptr pSite, Blueprint::Toolbox::Ptr pTo
 
         m_pBlueprint = pSite;
         m_pBlueprint->init();
-        m_pBlueprintEdit = Blueprint::Edit::create( *this, m_pBlueprint );
-        m_pBlueprintEdit->setViewMode( true, false, false );
-        m_pBlueprintEdit->activated();
+        m_pBlueprintEdit = Blueprint::EditMain::create( *this, m_pBlueprint, true, false, false );
     }
 }
 

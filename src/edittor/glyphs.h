@@ -19,7 +19,7 @@
 
 #include "blueprint/site.h"
 #include "blueprint/glyph.h"
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #include "blueprint/toolbox.h"
 #endif
 

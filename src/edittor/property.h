@@ -3,15 +3,9 @@
 
 #include <QDialog>
 
-#ifndef Q_MOC_RUN
-#include "blueprint/edit.h"
-#endif
-
 namespace Ui {
 class Property;
 }
-
-
 
 class Property : public QDialog
 {
@@ -28,7 +22,6 @@ private slots:
 
 private:
     Ui::Property *ui;
-    Blueprint::Edit::Ptr m_pBlueprintEdit;
     std::string& m_strPropertyName;
     std::string& m_strPropertyValue;
 };

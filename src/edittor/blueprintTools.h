@@ -11,7 +11,7 @@
 
 #ifndef Q_MOC_RUN
 #include "blueprint/glyph.h"
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #endif
 
 #include "glyphs.h"

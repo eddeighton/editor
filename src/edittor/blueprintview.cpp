@@ -1,4 +1,5 @@
 #include "blueprintview.h"
+#include "ui_mainwindow.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -39,8 +40,9 @@ namespace Ed
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-BlueprintView::BlueprintView(QWidget *parent) :
-    QGraphicsView(parent),
+BlueprintView::BlueprintView( QWidget* pParentWidget )
+:   QGraphicsView( pParentWidget ),
+    m_pQTUI( nullptr ),
     m_v2ZoomLevel( 1.0f, 1.0f ),
     m_interactionMode( eNone ),
     m_selectTool( *this ),
@@ -79,6 +81,7 @@ void BlueprintView::showEvent( QShowEvent* pEvent )
 
 void BlueprintView::OnNewBlueprint()
 {
+    VERIFY_RTE( m_pQTUI );
     VERIFY_RTE( m_pToolBox );
     if( m_pToolBox )
     {
@@ -96,7 +99,13 @@ void BlueprintView::OnNewBlueprint()
     m_pBlueprint = factory.create( "NewBlueprint" );
 
     //and start a new edit session
-    m_pBlueprintEdit = Blueprint::Edit::create( *this, m_pBlueprint );
+    m_pBlueprintEdit = Blueprint::EditMain::create( 
+            *this, 
+            m_pBlueprint,
+            m_pQTUI->actionMode_Arrangement->isChecked(),
+            m_pQTUI->actionMode_CellComplex->isChecked(),
+            m_pQTUI->actionMode_Clearance->isChecked()
+        );
 
     //the the initial context to the edit object
     m_pActiveContext = m_pBlueprintEdit.get();
@@ -110,6 +119,8 @@ void BlueprintView::OnNewBlueprint()
 
 void BlueprintView::OnLoadBlueprint()
 {
+    VERIFY_RTE( m_pQTUI );
+    
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
     QString strDefaultPath = environment.value( "BLUEPRINT_TOOLBOX_PATH" );
     if( m_pBlueprintEdit && !m_pBlueprintEdit->getFilePath().empty() )
@@ -144,7 +155,13 @@ void BlueprintView::OnLoadBlueprint()
             VERIFY_RTE( m_itemMap.empty() );
             VERIFY_RTE( m_specMap.empty() );
             m_pBlueprint = pNewBlueprint;
-            m_pBlueprintEdit = Blueprint::Edit::create( *this, m_pBlueprint, strFilePath.toStdString() );
+            
+            m_pBlueprintEdit = Blueprint::EditMain::create( *this, m_pBlueprint, 
+                m_pQTUI->actionMode_Arrangement->isChecked(),
+                m_pQTUI->actionMode_CellComplex->isChecked(),
+                m_pQTUI->actionMode_Clearance->isChecked(),
+                strFilePath.toStdString() );
+                
             m_pActiveContext = m_pBlueprintEdit.get();
 
             OnBlueprintSelected( BlueprintMsg( m_pBlueprint ) );

@@ -18,7 +18,7 @@
 
 #ifndef Q_MOC_RUN
 #include "blueprint/site.h"
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #include "blueprint/toolbox.h"
 #endif
 
@@ -30,6 +30,9 @@
 class BlueprintSelectionModel;
 class BlueprintItemModel;
 
+namespace Ui {
+class MainWindow;
+}
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 class BlueprintView : public QGraphicsView, public Blueprint::GlyphFactory
@@ -61,6 +64,7 @@ public:
     explicit BlueprintView(QWidget *parent = 0);
     ~BlueprintView();
 
+    void setUI( Ui::MainWindow* pUI ) { m_pQTUI = pUI; }
     void setModel( BlueprintSelectionModel* pSelection, BlueprintItemModel* pModel ) { m_pSelectionModel = pSelection; m_pModel = pModel; }
     void setToolbox( Blueprint::Toolbox::Ptr pToolbox ) { m_pToolBox = pToolbox; }
 
@@ -158,6 +162,7 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void drawBackground(QPainter *painter, const QRectF &rect);
 private:
+    Ui::MainWindow* m_pQTUI;
 
     BlueprintScene* m_pBlueprintScene;
     BlueprintSelectionModel* m_pSelectionModel;
@@ -165,7 +170,7 @@ private:
     ItemMap m_itemMap;
     SpecMap m_specMap;
 
-    Blueprint::Edit::Ptr m_pBlueprintEdit;
+    Blueprint::EditMain::Ptr m_pBlueprintEdit;
     Blueprint::Site::Ptr m_pBlueprint;
     Blueprint::IEditContext* m_pActiveContext;
 

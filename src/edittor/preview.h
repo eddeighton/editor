@@ -4,7 +4,7 @@
 #include <QDialog>
 
 #ifndef Q_MOC_RUN
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #endif
 
 namespace Ui {
@@ -18,7 +18,7 @@ class Preview : public QDialog
     Q_OBJECT
 
 public:
-    explicit Preview(QWidget *parent, Blueprint::Edit::Ptr pEdit );
+    explicit Preview(QWidget *parent, Blueprint::EditMain::Ptr pEdit );
     ~Preview();
 
 private slots:
@@ -32,7 +32,7 @@ private slots:
 
 private:
     Ui::Preview *ui;
-    Blueprint::Edit::Ptr m_pBlueprintEdit;
+    Blueprint::EditMain::Ptr m_pBlueprintEdit;
 };
 
 #endif // PREVIEW_H

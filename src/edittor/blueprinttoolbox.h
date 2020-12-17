@@ -15,6 +15,7 @@
 #include "common/tick.hpp"
 #include "blueprint/node.h"
 #include "blueprint/toolbox.h"
+#include "blueprint/editMain.h"
 #endif
 
 
@@ -47,7 +48,7 @@ protected:
 private:
     ItemMap m_itemMap;
     SpecMap m_specMap;
-    Blueprint::Edit::Ptr m_pBlueprintEdit;
+    Blueprint::EditMain::Ptr m_pBlueprintEdit;
     Blueprint::Site::Ptr m_pBlueprint;
     Blueprint::IEditContext* m_pNullContext;
     Blueprint::Toolbox::Ptr m_pToolBox;

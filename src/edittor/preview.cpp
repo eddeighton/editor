@@ -10,12 +10,12 @@
 #include <QMessageBox>
 #include <QProcessEnvironment>
 
-Preview::Preview(QWidget *parent, Blueprint::Edit::Ptr pEdit) :
+Preview::Preview(QWidget *parent, Blueprint::EditMain::Ptr pEdit ) :
     QDialog(parent),
-    ui(new Ui::Preview),
+    ui( new Ui::Preview ),
     m_pBlueprintEdit( pEdit )
 {
-    ui->setupUi(this);
+    ui->setupUi( this );
 
     if( m_pBlueprintEdit && !m_pBlueprintEdit->getFilePath().empty() )
     {
@@ -35,7 +35,6 @@ Preview::~Preview()
 {
     delete ui;
 }
-
 
 void Preview::on_buttonBox_accepted()
 {

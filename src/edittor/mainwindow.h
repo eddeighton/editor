@@ -39,7 +39,7 @@ private slots:
     void OnTreeViewDelProperty();
     void OnTreeViewEditProperty();
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
     BlueprintItemModel* m_pBlueprintItemModel;
     BlueprintSelectionModel* m_pBlueprintSelectionModel;
 

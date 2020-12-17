@@ -13,12 +13,12 @@
 #ifndef Q_MOC_RUN
 #include <functional>
 #include "blueprint/site.h"
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui( new Ui::MainWindow )
 {
     ui->setupUi(this);
 
@@ -245,6 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         m_pToolbox.reset( new Blueprint::Toolbox( strToolBoxPath.toLocal8Bit().constData() ) );
         ui->graphicsView->setToolbox( m_pToolbox );
+        ui->graphicsView->setUI( ui );
     }
     
     ui->actionSelect->trigger();

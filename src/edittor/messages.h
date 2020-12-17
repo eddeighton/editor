@@ -4,7 +4,7 @@
 
 #ifndef Q_MOC_RUN
 #include "blueprint/node.h"
-#include "blueprint/edit.h"
+#include "blueprint/editMain.h"
 #include "blueprint/toolbox.h"
 #endif
 

@@ -71,12 +71,13 @@ Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blue
         GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pNullContext, true, m_pToolBox ) );
     return pNewGlyph;
 }
+/*
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, this, 
         GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
     return pNewGlyph;
-}
+}*/
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, this, 

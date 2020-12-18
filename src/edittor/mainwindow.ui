@@ -91,7 +91,7 @@
     <property name="title">
      <string>Rotate</string>
     </property>
-    <addaction name="actionRotate_Left"/>
+    <!--<addaction name="actionRotate_Left"/>-->
     <addaction name="actionRotate_Right"/>
    </widget>
    <widget class="QMenu" name="menuFlip">
@@ -330,12 +330,12 @@
    </property>
   </action>
   
-  
+  <!--
   <action name="actionRotate_Left">
    <property name="text">
     <string>Rotate Left</string>
    </property>
-  </action>
+  </action>-->
   <action name="actionRotate_Right">
    <property name="text">
     <string>Rotate Right</string>

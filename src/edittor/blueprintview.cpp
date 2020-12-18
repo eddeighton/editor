@@ -478,7 +478,7 @@ void BlueprintView::OnSelectMode_Contour()
 //    ASSERT( m_pActiveTool );
 //    //m_toolMode = Blueprint::IEditContext::eConnection;
 //}
-
+/*
 void BlueprintView::OnRotateLeft()
 {
     ASSERT( m_pActiveContext );
@@ -488,7 +488,7 @@ void BlueprintView::OnRotateLeft()
     invalidateScene();
     OnBlueprintModified();
 }
-
+*/
 void BlueprintView::OnRotateRight()
 {
     ASSERT( m_pActiveContext );
@@ -813,13 +813,13 @@ Blueprint::IGlyph::Ptr BlueprintView::createOrigin( Blueprint::Origin* pOrigin, 
         GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pActiveContext, true, m_pToolBox ) );
     return pNewGlyph;
 }
-
+/*
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, m_pBlueprintScene, 
         GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_v2ZoomLevel.y(), true, m_pToolBox ) );
     return pNewGlyph;
-}
+}*/
 
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
 {

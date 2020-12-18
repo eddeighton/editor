@@ -31,6 +31,7 @@ void cleanUpItem( QGraphicsItem* pItem, GlyphMap& map, const Blueprint::GlyphSpe
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+/*
 void constructQPainterPath( const Blueprint::MarkupPath::PathCmdVector& cmds, QPainterPath& path )
 {
     for( Blueprint::MarkupPath::PathCmdVector::const_iterator
@@ -82,7 +83,7 @@ void constructQPainterPath( const Blueprint::MarkupPath::PathCmdVector& cmds, QP
                 break;
         }
     }
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -170,7 +171,7 @@ void GlyphControlPoint::setShouldRender( bool bShouldRender )
 //////////////////////////////////////////////////////////////////////
 static QColor g_pathColor( 155,155,155,125 );
 static float g_pathWidth( 4.0f );
-
+/*
 GlyphPath::GlyphPath( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                       GlyphMap map, Blueprint::MarkupPath* pPath, 
                       float fZoom, bool bShouldRender,
@@ -224,7 +225,7 @@ void GlyphPath::setShouldRender( bool bShouldRender )
 {
     m_bShouldRender = bShouldRender;
 }
-
+*/
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
@@ -233,17 +234,14 @@ static float g_polygonWidth( 4.0f );
 
 void constructPolygonGroupPath( const Blueprint::MarkupPolygonGroup& polygonGroup, QPainterPath& path )
 {
-    //using Point = std::pair< float, float >;
-    //using Polygon = std::vector< Point >;
-    
     const std::size_t szTotal = polygonGroup.getTotalPolygons();
     for( std::size_t sz = 0U; sz != szTotal; ++sz )
     {
-        Blueprint::MarkupPolygonGroup::Polygon polygon;
+        Blueprint::MarkupPolygon polygon;
         polygonGroup.getPolygon( sz, polygon );
         
         bool bFirst = true;
-        for( const Blueprint::MarkupPolygonGroup::Point& pt : polygon )
+        for( const Blueprint::MarkupPoint& pt : polygon )
         {
             if( bFirst )
             {
@@ -372,7 +370,10 @@ GlyphOrigin::GlyphOrigin( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene
     
     QGraphicsItem* pParentItem = m_map.findItem( getOrigin()->getParent() );
     {
-        constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), m_path );
+        QPainterPath newPath;
+        constructPolygonGroupPath( *getOrigin()->getMarkupContour(), m_path );
+        
+        //constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), m_path );
         
         m_pPathItem = new QGraphicsPathItem( m_path, pParentItem );
         if( !pParentItem ) m_pScene->addItem( m_pPathItem );
@@ -443,11 +444,14 @@ void GlyphOrigin::updateColours()
         m_pItemY->setVisible( false );
     }
     
-    const Blueprint::Matrix& originMatrix = getOrigin()->getTransform();
+    const Blueprint::Transform& originMatrix = getOrigin()->getTransform();
     const QTransform transform( 
-        originMatrix.M11(),   originMatrix.M12(),
-        originMatrix.M21(),   originMatrix.M22(),
-        originMatrix.X(),     originMatrix.Y() );
+        CGAL::to_double( originMatrix.m( 0, 0 ) ), 
+        CGAL::to_double( originMatrix.m( 1, 0 ) ),
+        CGAL::to_double( originMatrix.m( 0, 1 ) ),
+        CGAL::to_double( originMatrix.m( 1, 1 ) ),
+        CGAL::to_double( originMatrix.m( 0, 2 ) ),
+        CGAL::to_double( originMatrix.m( 1, 2 ) ) );
     
     m_pPathItem->setTransform( transform );
     m_pItemX->setTransform( transform );
@@ -458,7 +462,8 @@ void GlyphOrigin::update()
 {
     {
         QPainterPath newPath;
-        constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), newPath );
+        constructPolygonGroupPath( *getOrigin()->getMarkupContour(), newPath );
+        //constructQPainterPath( getOrigin()->getMarkupContour()->getCmds(), newPath );
         m_path = newPath;
         m_pPathItem->setPath( m_path );
     }

@@ -45,8 +45,9 @@ FORMS    += mainwindow.ui \
             property.ui
 
 ################################################
-# wykobi path
-WYKOBI_PATH = W:\root\thirdparty_x64\wykobi
+# cgal path
+CGAL_INSTALL_PATH     = W:\root\thirdparty_x64\cgal\install
+CGAL_AUX_INSTALL_PATH = W:\root\thirdparty_x64\cgal\downloaded_install
     
 ################################################
 # common stuff
@@ -102,8 +103,31 @@ win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$BOOST_LIB_PATH/libboos
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$BOOST_LIB_PATH/libboost_iostreams-vc166-mt-gd-x64-1_73.lib
 
 ################################################
-## wykobi
-INCLUDEPATH += $$WYKOBI_PATH/src
+## cgal
+win32:CONFIG(release, debug|release): LIBS += -L$$CGAL_INSTALL_PATH/lib -lCGAL-vc142-mt-5.1.1-I-900
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$CGAL_INSTALL_PATH/lib -lCGAL-vc142-mt-5.1.1-I-900
+
+win32:CONFIG(release, debug|release): LIBS += -L$$CGAL_AUX_INSTALL_PATH/auxiliary/gmp/lib -llibgmp-10
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$CGAL_AUX_INSTALL_PATH/auxiliary/gmp/lib -llibgmp-10
+
+win32:CONFIG(release, debug|release): LIBS += -L$$CGAL_AUX_INSTALL_PATH/auxiliary/gmp/lib -llibmpfr-4
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$CGAL_AUX_INSTALL_PATH/auxiliary/gmp/lib -llibmpfr-4
+
+INCLUDEPATH += $$CGAL_INSTALL_PATH/include
+INCLUDEPATH += $$CGAL_AUX_INSTALL_PATH/auxiliary/gmp/include
+
+#DEPENDPATH += $$ED_PATH/src/blueprint/src/
+
+#QMAKE_LIBDIR += $$CGAL_INSTALL_PATH
+
+#win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$COMMON_PATH/bin/commonlib.lib
+#else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$COMMON_PATH/bin/commonlibd.lib
+
+#target_link_directories( ${targetname} PRIVATE ${CGAL_LIBRARIES_DIR} )
+    
+#target_link_libraries( ${targetname} PUBLIC ${CGAL_AUX_INSTALL_PATH}/auxiliary/gmp/lib/libgmp-10.lib )
+#target_link_libraries( ${targetname} PUBLIC ${CGAL_AUX_INSTALL_PATH}/auxiliary/gmp/lib/libmpfr-4.lib )
+#target_link_libraries( ${targetname} PUBLIC ${CGAL_INSTALL_PATH}/lib/CGAL-vc142-mt-5.1.1-I-900.lib )
 
 ################################################
 ## common lib

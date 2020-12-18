@@ -48,7 +48,7 @@ struct GlyphMap
             //only the root can have no graphics item
             if( pSpec->getParent() )
             {
-                ASSERT_MSG( pItem, "Failed to locate QGraphicsItem* for parent of: " << pSpec->getName() );
+                ASSERT_MSG( pItem, "Failed to locate QGraphicsItem*" );
             }
         }
         return pItem;
@@ -148,6 +148,7 @@ private:
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+/*
 class GlyphPath : public Blueprint::GlyphPath, public ZoomDependent, public Renderable
 {
 public:
@@ -173,7 +174,7 @@ private:
     QGraphicsPathItem* m_pItem;
     Blueprint::Toolbox::Ptr m_pToolBoxPtr;
 };
-
+*/
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 class GlyphPolygonGroup : public Blueprint::GlyphPolygonGroup, public ZoomDependent, public Renderable

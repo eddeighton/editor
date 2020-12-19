@@ -29,71 +29,15 @@ void cleanUpItem( QGraphicsItem* pItem, GlyphMap& map, const Blueprint::GlyphSpe
     }
 }
 
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-/*
-void constructQPainterPath( const Blueprint::MarkupPath::PathCmdVector& cmds, QPainterPath& path )
-{
-    for( Blueprint::MarkupPath::PathCmdVector::const_iterator
-         i = cmds.begin(), iEnd = cmds.end(); i!=iEnd; ++i )
-    {
-        switch( i->cmd )
-        {
-            case Blueprint::MarkupPath::Cmd::path_cmd_stop:
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_move_to:
-                path.moveTo( i->x, i->y );
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_line_to:
-                path.lineTo( i->x, i->y );
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_curve3:
-                {
-                    qDebug() << "Error attempting to render MarkupPath::Cmd::path_cmd_curve3";
-                }
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_curve4:
-                {
-                    const float c1x = i->x, c1y = i->y;
-                    ++i;
-                    const float c2x = i->x, c2y = i->y;
-                    ++i;
-                    path.cubicTo( c1x, c1y, c2x, c2y, i->x, i->y );
-                }
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_curveN:
-                {
-                    qDebug() << "Error attempting to render MarkupPath::Cmd::path_cmd_curveN";
-                }
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_catrom:
-                {
-                    qDebug() << "Error attempting to render MarkupPath::Cmd::path_cmd_catrom";
-                }
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_ubspline:
-                {
-                    qDebug() << "Error attempting to render MarkupPath::Cmd::path_cmd_ubspline";
-                }
-                break;
-            case Blueprint::MarkupPath::Cmd::path_cmd_end_poly | Blueprint::MarkupPath::Cmd::path_flags_close:
-                path.closeSubpath();
-                break;
-            default:
-                break;
-        }
-    }
-}*/
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 GlyphControlPoint::GlyphControlPoint( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                                       GlyphMap map, Blueprint::ControlPoint* pControlPoint, 
-                                      float fZoom, bool bShouldRender,
+                                      float fZoom,
                                       Blueprint::Toolbox::Ptr pToolboxPtr )
     :   Blueprint::GlyphControlPoint( pControlPoint, pParent ),
         Selectable( calculateDepth( pControlPoint ) ),
-        Renderable( bShouldRender ),
         
         m_fSizeScaling( 8.0f ),
         m_fSize( m_fSizeScaling / fZoom ),
@@ -162,73 +106,13 @@ QGraphicsEllipseItem* GlyphControlPoint::getItem() const
 
 void GlyphControlPoint::setShouldRender( bool bShouldRender )
 {
-    m_bShouldRender = bShouldRender;
+    m_pItem->setVisible( bShouldRender );
 }
-
-
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 static QColor g_pathColor( 155,155,155,125 );
 static float g_pathWidth( 4.0f );
-/*
-GlyphPath::GlyphPath( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-                      GlyphMap map, Blueprint::MarkupPath* pPath, 
-                      float fZoom, bool bShouldRender,
-                      Blueprint::Toolbox::Ptr pToolBoxPtr )
-    :   Blueprint::GlyphPath( pPath, pParent ),
-        Renderable( bShouldRender ),
-        m_pScene( pScene ),
-        m_map( map ),
-        m_fSize( g_pathWidth / fZoom ),
-        m_pItem( 0u ),
-        m_pToolBoxPtr( pToolBoxPtr )
-{
-    if( m_pToolBoxPtr )
-    {
-        m_pToolBoxPtr->getConfigValue( ".glyphs.paths.colour", g_pathColor );
-        m_pToolBoxPtr->getConfigValue( ".glyphs.paths.width", g_pathWidth );
-    }
-    
-    //convert to painter path
-    constructQPainterPath( getMarkupPath()->getCmds(), m_path );
-    QGraphicsItem* pParentItem = m_map.findItem( getMarkupPath()->getParent() );
-    m_pItem = new QGraphicsPathItem( m_path, pParentItem );
-    if( !pParentItem ) m_pScene->addItem( m_pItem );
-    m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::DashDotLine ) );
-    m_pItem->setBrush( QBrush( Qt::NoBrush ) );
-    m_pItem->setZValue( 1.5f );
-    m_map.insert( m_pItem, getMarkupPath(), this );
-}
-
-GlyphPath::~GlyphPath()
-{
-    cleanUpItem( m_pItem, m_map, getMarkupPath(), m_pScene );
-}
-
-void GlyphPath::OnNewZoomLevel( float fZoom )
-{
-    m_fSize = g_pathWidth / fZoom;
-    update();
-}
-
-void GlyphPath::update()
-{
-    QPainterPath newPath;
-    constructQPainterPath( getMarkupPath()->getCmds(), newPath );
-    m_path = newPath;
-    m_pItem->setPath( m_path );
-    m_pItem->setPen( QPen( QBrush( g_pathColor ), m_fSize, Qt::DashDotLine ) );
-}
-
-void GlyphPath::setShouldRender( bool bShouldRender )
-{
-    m_bShouldRender = bShouldRender;
-}
-*/
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-
 static QColor g_polygonColor( 155,155,155,200 );
 static float g_polygonWidth( 4.0f );
 
@@ -262,10 +146,9 @@ void constructPolygonGroupPath( const Blueprint::MarkupPolygonGroup& polygonGrou
 
 GlyphPolygonGroup::GlyphPolygonGroup( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                       GlyphMap map, Blueprint::MarkupPolygonGroup* pPolygonGroup, 
-                      float fZoom, bool bShouldRender,
+                      float fZoom, 
                       Blueprint::Toolbox::Ptr pToolBoxPtr )
     :   Blueprint::GlyphPolygonGroup( pPolygonGroup, pParent ),
-        Renderable( bShouldRender ),
         m_pScene( pScene ),
         m_map( map ),
         m_pItem( 0u ),
@@ -328,7 +211,7 @@ void GlyphPolygonGroup::update()
 
 void GlyphPolygonGroup::setShouldRender( bool bShouldRender )
 {
-    m_bShouldRender = bShouldRender;
+    m_pItem->setVisible( bShouldRender );
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -341,11 +224,10 @@ static QColor g_originIdle( 0, 0, 255 , 25 );
 
 GlyphOrigin::GlyphOrigin( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                         GlyphMap map, Blueprint::Origin* pOrigin, 
-                        Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                        Blueprint::IEditContext*& pActiveContext,
                         Blueprint::Toolbox::Ptr pToolBoxPtr )
     :   Blueprint::GlyphOrigin( pOrigin, pParent ),
         Selectable( calculateDepth( pOrigin ) ),
-        Renderable( bShouldRender ),
         m_pScene( pScene ),
         m_map( map ),
         m_pItemX( nullptr ),
@@ -473,7 +355,9 @@ void GlyphOrigin::update()
 
 void GlyphOrigin::setShouldRender( bool bShouldRender )
 {
-    m_bShouldRender = bShouldRender;
+    m_pPathItem->setVisible( bShouldRender );
+    m_pItemX->setVisible( bShouldRender );
+    m_pItemY->setVisible( bShouldRender );
 }
 
 /*
@@ -485,11 +369,10 @@ QVector< QRgb > GlyphImage::m_coloursActiveContext;
 
 GlyphImage::GlyphImage( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                         GlyphMap map, Blueprint::ImageSpec* pImage, 
-                        Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                        Blueprint::IEditContext*& pActiveContext, 
                         Blueprint::Toolbox::Ptr pToolBoxPtr )
     :   Blueprint::GlyphImage( pImage, pParent ),
         Selectable( calculateDepth( pImage ) ),
-        Renderable( bShouldRender ),
         m_pScene( pScene ),
         m_map( map ),
         m_pItem( 0u ),
@@ -624,7 +507,7 @@ void GlyphImage::update()
 
 void GlyphImage::setShouldRender( bool bShouldRender )
 {
-    m_bShouldRender = bShouldRender;
+    m_pItem->setVisible( bShouldRender );
 }
 */
 //////////////////////////////////////////////////////////////////////
@@ -632,10 +515,9 @@ void GlyphImage::setShouldRender( bool bShouldRender )
 static QColor g_textColour( 255, 255, 255 );
 
 GlyphText::GlyphText( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene, 
-                     GlyphMap map, Blueprint::MarkupText* pText, bool bShouldRender,
+                     GlyphMap map, Blueprint::MarkupText* pText,
                      Blueprint::Toolbox::Ptr pToolBoxPtr )
     :   Blueprint::GlyphText( pText, pParent ),
-        Renderable( bShouldRender ),
         m_pScene( pScene ),
         m_map( map ),
         m_pItem( nullptr ),
@@ -655,9 +537,6 @@ GlyphText::GlyphText( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
     m_pItem->setPos( getMarkupText()->getX(), getMarkupText()->getY() );
     m_pItem->setBrush( QBrush( QColor( g_textColour ) ) );
     m_map.insert( m_pItem, pText, this );
-
-    if( !m_bShouldRender && m_pItem->isVisible() )
-        m_pItem->hide();
 }
 
 GlyphText::~GlyphText()
@@ -673,11 +552,7 @@ void GlyphText::update()
 
 void GlyphText::setShouldRender( bool bShouldRender )
 {
-    m_bShouldRender = bShouldRender;
-    if( m_bShouldRender && !m_pItem->isVisible() )
-        m_pItem->show();
-    else if( !m_bShouldRender && m_pItem->isVisible() )
-        m_pItem->hide();
+    m_pItem->setVisible( bShouldRender );
 }
 
 

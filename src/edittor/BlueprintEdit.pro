@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     preview.cpp \
     property.cpp \
     mainwidget.cpp \
-    geometryengine.cpp
+    geometryengine.cpp \
+    analysisView.cpp
     
 HEADERS  += mainwindow.h \
     blueprintscene.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     preview.h \
     property.h \
     mainwidget.h \
-    geometryengine.h
+    geometryengine.h \
+    analysisView.h
 
 FORMS    += mainwindow.ui \
             preview.ui \

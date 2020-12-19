@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionLoad->setIcon( QIcon( ":/art/folderOpen.png" ) );
     ui->actionSave->setIcon( QIcon( ":/art/disk.png" ) );
     ui->actionSave_As->setIcon( QIcon( ":/art/disk_saveas.png" ) );
+    
 
     ui->actionCut->setIcon( QIcon( ":/art/cut.png" ) );
     ui->actionCopy->setIcon( QIcon( ":/art/clipboard_copy.png" ) );
@@ -37,9 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->dockProperties->toggleViewAction()->setIcon(    QIcon( ":/art/dialog.png" ) );
     ui->dockToolbox->toggleViewAction()->setIcon(       QIcon( ":/art/folder.png" ) );
 
+    ui->actionMode_Site->setIcon(           QIcon( ":/art/notepad.png" ) );
     ui->actionMode_Arrangement->setIcon(    QIcon( ":/art/blueprint.png" ) );
-    ui->actionMode_CellComplex->setIcon(    QIcon( ":/art/scan.png" ) );
-    ui->actionMode_Clearance->setIcon(      QIcon( ":/art/rook.png" ) );
+    ui->actionMode_CellComplex->setIcon(    QIcon( ":/art/ai.png" ) );
     
     //ui->actionRotate_Left->setIcon( QIcon( ":/art/arrow_cycle.png" ) );
     ui->actionRotate_Right->setIcon( QIcon( ":/art/arrow_cycle.png" ) );
@@ -66,9 +67,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //m_pModeActionGroup->addAction( ui->actionConnection );
     m_pModeActionGroup->setExclusive( true );
     
+    ui->actionMode_Site->setCheckable( true );
+    ui->actionMode_Site->setChecked( true ); //default to true
     ui->actionMode_Arrangement->setCheckable( true );
     ui->actionMode_CellComplex->setCheckable( true );
-    ui->actionMode_Clearance->setCheckable( true );
     
     ui->actionSelect->setData( -2 );
     ui->actionPen->setData( -1 );
@@ -130,9 +132,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->mainToolBar->addAction( ui->actionConnection );
     
     ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction( ui->actionMode_Site );
     ui->mainToolBar->addAction( ui->actionMode_Arrangement );
     ui->mainToolBar->addAction( ui->actionMode_CellComplex );
-    ui->mainToolBar->addAction( ui->actionMode_Clearance );
     
     ui->menuView->addAction( ui->dockProperties->toggleViewAction() );
     ui->dockProperties->toggleViewAction()->setShortcut( Qt::Key_F1 );
@@ -149,7 +151,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSave_As->setShortcut( QKeySequence( "Ctrl+Shift+s" ) );
     QObject::connect( ui->actionExit,SIGNAL(triggered()),this, SLOT(close()) );
     ui->actionExit->setShortcut( QKeySequence( "Ctrl+q" ) );
-
+    
+    QObject::connect( ui->actionLoadVis_File,SIGNAL(triggered()),ui->graphicsView,SLOT(OnLoadAnalysisFromFile() ));
+    
     QObject::connect( ui->actionSelect,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectTool_Selector() ));
     ui->actionSelect->setShortcut( Qt::Key_1 );
     QObject::connect( ui->actionPen,SIGNAL(triggered()),ui->graphicsView,SLOT(OnSelectTool_Pen() ));
@@ -179,16 +183,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( ui->actionSelect_All,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_SelectAll() ));
     ui->actionSelect_All->setShortcut( QKeySequence( "Ctrl+a" ) );
     
-    QObject::connect( ui->actionMode_Arrangement,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
-    QObject::connect( ui->actionMode_CellComplex,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
-    QObject::connect( ui->actionMode_Clearance,SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_Site,          SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_Arrangement,   SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
+    QObject::connect( ui->actionMode_CellComplex,   SIGNAL(triggered()),this,SLOT(OnModeChanged() ));
     
     //QObject::connect( ui->actionRotate_Left,        SIGNAL(triggered()),    ui->graphicsView,SLOT( OnRotateLeft() ));
     QObject::connect( ui->actionRotate_Right,       SIGNAL(triggered()),    ui->graphicsView,SLOT( OnRotateRight() ));
     QObject::connect( ui->actionFlip_Horizontal,    SIGNAL(triggered()),    ui->graphicsView,SLOT( OnFlipHorizontally() ));
     QObject::connect( ui->actionFlip_Vertical,      SIGNAL(triggered()),    ui->graphicsView,SLOT( OnFlipVeritcally() ));
     
-    QObject::connect( ui->actionExtrude,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Extrude() ));
+    //QObject::connect( ui->actionExtrude,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Extrude() ));
     
     //QObject::connect( ui->actionUndo,SIGNAL(triggered()),ui->graphicsView,SLOT(OnCmd_Undo() ));
     //ui->actionUndo->setShortcut( QKeySequence( "Ctrl+z" ) );
@@ -248,18 +252,18 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->graphicsView->setToolbox( m_pToolbox );
         ui->graphicsView->setUI( ui );
     }
-    
-    ui->actionSelect->trigger();
-    ui->actionArea->trigger();
 
     ui->toolBox->setToolbox( m_pToolbox );
 
-    QObject::connect( ui->graphicsView,&BlueprintView::OnClipboardAction, ui->toolBox, &BlueprintToolbox::updateToolbox );
+    QObject::connect( ui->graphicsView, &BlueprintView::OnClipboardAction, ui->toolBox, &BlueprintToolbox::updateToolbox );
     
     QObject::connect( 
         ui->toolBox, SIGNAL( currentChanged(int) ), 
         ui->toolBox, SLOT( onCurrentPaletteChanged(int) ) );
 
+    ui->actionSelect->trigger();
+    ui->actionArea->trigger();
+    
     qDebug() << "MainWindow::ctor complete";
     
     //QObject::connect( 
@@ -323,15 +327,12 @@ void MainWindow::OnBlueprintSelected( BlueprintMsg msg )
 
 void MainWindow::OnModeChanged()
 {
-    if( ui->graphicsView && 
-        ui->actionMode_Arrangement && 
-        ui->actionMode_CellComplex && 
-        ui->actionMode_Clearance )
+    if( ui->graphicsView &&
+        ui->actionMode_Site &&
+        ui->actionMode_Arrangement &&
+        ui->actionMode_CellComplex )
     {
-        ui->graphicsView->setViewMode( 
-            ui->actionMode_Arrangement->isChecked(),
-            ui->actionMode_CellComplex->isChecked(),
-            ui->actionMode_Clearance->isChecked() );
+        ui->graphicsView->updateViewMode();
     }
 }
 

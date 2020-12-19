@@ -62,32 +62,28 @@ void ClipScene::calculateSceneRect()
 Blueprint::IGlyph::Ptr ClipScene::createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphControlPoint( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_fDeviceWidth / this->sceneRect().height(), m_pToolBox ) );
     return pNewGlyph;
 }
+
 Blueprint::IGlyph::Ptr ClipScene::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphOrigin( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pNullContext, true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pNullContext, m_pToolBox ) );
     return pNewGlyph;
 }
-/*
-Blueprint::IGlyph::Ptr ClipScene::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
-{
-    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
-    return pNewGlyph;
-}*/
+
 Blueprint::IGlyph::Ptr ClipScene::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_fDeviceWidth / this->sceneRect().height(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_fDeviceWidth / this->sceneRect().height(), m_pToolBox ) );
     return pNewGlyph;
 }
+
 Blueprint::IGlyph::Ptr ClipScene::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphText( pParent, this, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupText, false, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupText, m_pToolBox ) );
     return pNewGlyph;
 }
 

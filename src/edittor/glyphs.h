@@ -86,13 +86,7 @@ private:
 class Renderable
 {
 public:
-    Renderable( bool bShouldRender ) : m_bShouldRender( bShouldRender )
-    {
-    }
-    virtual bool isRendering() const { return m_bShouldRender; }
     virtual void setShouldRender( bool bShouldRender )=0;
-protected:
-    bool m_bShouldRender;
 };
 class ZoomDependent
 {
@@ -117,7 +111,7 @@ class GlyphControlPoint : public Blueprint::GlyphControlPoint, public Selectable
 {
 public:
     GlyphControlPoint( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-                       GlyphMap map, Blueprint::ControlPoint* pControlPoint, float fZoom, bool bShouldRender,
+                       GlyphMap map, Blueprint::ControlPoint* pControlPoint, float fZoom,
                        Blueprint::Toolbox::Ptr pToolboxPtr );
     ~GlyphControlPoint();
 
@@ -148,40 +142,11 @@ private:
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-/*
-class GlyphPath : public Blueprint::GlyphPath, public ZoomDependent, public Renderable
-{
-public:
-    GlyphPath( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-               GlyphMap map, Blueprint::MarkupPath* pPath, float fZoom, bool bShouldRender,
-               Blueprint::Toolbox::Ptr pToolBoxPtr );
-    ~GlyphPath();
-
-    //ZoomDependent
-    virtual void OnNewZoomLevel( float fZoom );
-
-    //Renderable
-    virtual void setShouldRender( bool bShouldRender );
-
-    //Blueprint::GlyphPath
-    virtual void update();
-
-private:
-    float m_fSize;
-    QPainterPath m_path;
-    QGraphicsScene* m_pScene;
-    GlyphMap m_map;
-    QGraphicsPathItem* m_pItem;
-    Blueprint::Toolbox::Ptr m_pToolBoxPtr;
-};
-*/
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
 class GlyphPolygonGroup : public Blueprint::GlyphPolygonGroup, public ZoomDependent, public Renderable
 {
 public:
     GlyphPolygonGroup( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-               GlyphMap map, Blueprint::MarkupPolygonGroup* pPolygonGroup, float fZoom, bool bShouldRender,
+               GlyphMap map, Blueprint::MarkupPolygonGroup* pPolygonGroup, float fZoom,
                Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphPolygonGroup();
 
@@ -210,7 +175,7 @@ class GlyphOrigin : public Blueprint::GlyphOrigin, public Selectable, public Ren
 public:
     GlyphOrigin( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                 GlyphMap map, Blueprint::Origin* pOrigin, 
-                Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                Blueprint::IEditContext*& pActiveContext,
                 Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphOrigin();
 
@@ -252,7 +217,7 @@ class GlyphImage : public Blueprint::GlyphImage, public Selectable, public Rende
 public:
     GlyphImage( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
                 GlyphMap map, Blueprint::ImageSpec* pImage, 
-                Blueprint::IEditContext*& pActiveContext, bool bShouldRender,
+                Blueprint::IEditContext*& pActiveContext,
                 Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphImage();
 
@@ -289,7 +254,7 @@ class GlyphText : public Blueprint::GlyphText, public Renderable
 {
 public:
     GlyphText( Blueprint::IGlyph::Ptr pParent, QGraphicsScene* pScene,
-               GlyphMap map, Blueprint::MarkupText* pText, bool bShouldRender,
+               GlyphMap map, Blueprint::MarkupText* pText,
                Blueprint::Toolbox::Ptr pToolBoxPtr );
     ~GlyphText();
 

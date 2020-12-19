@@ -20,12 +20,14 @@
 #include "blueprint/site.h"
 #include "blueprint/editMain.h"
 #include "blueprint/toolbox.h"
+#include "blueprint/visibility.h"
 #endif
 
 #include "blueprintscene.h"
 #include "glyphs.h"
 #include "messages.h"
 #include "blueprintTools.h"
+#include "analysisView.h"
 
 class BlueprintSelectionModel;
 class BlueprintItemModel;
@@ -108,6 +110,8 @@ public slots:
     void OnLoadBlueprint();
     void OnSaveBlueprint();
     void OnSaveAsBlueprint();
+    
+    void OnLoadAnalysisFromFile();
 
     //cmds
     void OnCmd_Delete();
@@ -129,7 +133,7 @@ public slots:
     void OnSelectionChanged( const QItemSelection& selected, const QItemSelection& deselected );
 
     //view modes
-    void setViewMode( bool bArrangement, bool bCellComplex, bool bClearance );
+    void updateViewMode();
 
     //tools
     void OnSelectTool_Selector();
@@ -161,6 +165,13 @@ protected:
     void scrollContentsBy(int dx, int dy );
     void wheelEvent(QWheelEvent *event);
     void drawBackground(QPainter *painter, const QRectF &rect);
+    
+    bool showSites();
+    bool showArrangement();
+    bool showCells();
+    
+    void hideAllGlyphItems();
+    void showAllGlyphItems();
 private:
     Ui::MainWindow* m_pQTUI;
 
@@ -173,6 +184,7 @@ private:
     Blueprint::EditMain::Ptr m_pBlueprintEdit;
     Blueprint::Site::Ptr m_pBlueprint;
     Blueprint::IEditContext* m_pActiveContext;
+    Blueprint::Analysis::Ptr m_pAnalysis;
 
     InteractionMode m_interactionMode;
 
@@ -191,6 +203,9 @@ private:
     static const float m_fZoomRate;
     float m_fDefaultZoom;
     bool m_bInitialising;
+    
+    AnalysisView::Ptr m_pAnalysisView;
+    
 };
 
 #endif // BLUEPRINTVIEW_H

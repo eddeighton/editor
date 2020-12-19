@@ -117,21 +117,27 @@
     <addaction name="actionZoom_Out"/>
     <addaction name="actionTab_Out"/>
     <addaction name="separator"/>
+    <addaction name="actionMode_Site"/>
     <addaction name="actionMode_Arrangement"/>
     <addaction name="actionMode_CellComplex"/>
-    <addaction name="actionMode_Clearance"/>
+    <addaction name="separator"/>
+    <addaction name="actionCompile"/>
+    <addaction name="actionLoadVis_File"/>
+    <addaction name="actionLoadVis_Stash"/>
     <addaction name="separator"/>
    </widget>
+   
+   <!--
    <widget class="QMenu" name="menuGenerate">
     <property name="title">
      <string>Generate</string>
     </property>
     <addaction name="actionExtrude"/>
    </widget>
+   -->
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuGenerate"/>
   </widget>
   
   <widget class="QToolBar" name="mainToolBar">
@@ -228,11 +234,13 @@
     <string>Contour</string>
    </property>
   </action>
+  <!--
   <action name="actionExtrude">
    <property name="text">
     <string>Extrude</string>
    </property>
   </action>
+  -->
   <action name="actionSelect_All">
    <property name="text">
     <string>Select All</string>
@@ -314,6 +322,11 @@
    </property>
   </action>
   
+  <action name="actionMode_Site">
+   <property name="text">
+    <string>Sites</string>
+   </property>
+  </action>
   <action name="actionMode_Arrangement">
    <property name="text">
     <string>Arrangement</string>
@@ -324,12 +337,22 @@
     <string>Cell Complex</string>
    </property>
   </action>
-  <action name="actionMode_Clearance">
+  
+  <action name="actionCompile">
    <property name="text">
-    <string>Clearance</string>
+    <string>Compile Analysis</string>
    </property>
   </action>
-  
+  <action name="actionLoadVis_File">
+   <property name="text">
+    <string>Load Analysis from File</string>
+   </property>
+  </action>
+  <action name="actionLoadVis_Stash">
+   <property name="text">
+    <string>Load Analysis from Stash</string>
+   </property>
+  </action>
   <!--
   <action name="actionRotate_Left">
    <property name="text">

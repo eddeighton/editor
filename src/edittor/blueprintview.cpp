@@ -100,12 +100,7 @@ void BlueprintView::OnNewBlueprint()
 
     //and start a new edit session
     m_pBlueprintEdit = Blueprint::EditMain::create( 
-            *this, 
-            m_pBlueprint,
-            m_pQTUI->actionMode_Arrangement->isChecked(),
-            m_pQTUI->actionMode_CellComplex->isChecked(),
-            m_pQTUI->actionMode_Clearance->isChecked()
-        );
+            *this, m_pBlueprint, showArrangement(), false, false );
 
     //the the initial context to the edit object
     m_pActiveContext = m_pBlueprintEdit.get();
@@ -142,10 +137,17 @@ void BlueprintView::OnLoadBlueprint()
             pNewBlueprint = factory.load( strFilePath.toStdString() );
             OnWindowTitleModified( strFilePath );
         }
+        catch( std::exception& ex )
+        {
+            std::ostringstream os;
+            os << "Error loading file: " << strFilePath.toStdString() << " : " << ex.what();
+            QMessageBox::warning( this, tr( "Blueprint Edittor" ),
+                                  QString::fromUtf8( os.str().c_str() ) );
+        }
         catch( ... )
         {
-            QMessageBox::warning( this,
-                                  tr( "Blueprint Edittor" ),
+            
+            QMessageBox::warning( this, tr( "Blueprint Edittor" ),
                                   "The blueprint failed to load correctly." );
         }
         if( pNewBlueprint )
@@ -157,10 +159,7 @@ void BlueprintView::OnLoadBlueprint()
             m_pBlueprint = pNewBlueprint;
             
             m_pBlueprintEdit = Blueprint::EditMain::create( *this, m_pBlueprint, 
-                m_pQTUI->actionMode_Arrangement->isChecked(),
-                m_pQTUI->actionMode_CellComplex->isChecked(),
-                m_pQTUI->actionMode_Clearance->isChecked(),
-                strFilePath.toStdString() );
+                showArrangement(), false, false, strFilePath.toStdString() );
                 
             m_pActiveContext = m_pBlueprintEdit.get();
 
@@ -184,6 +183,13 @@ void BlueprintView::OnSaveBlueprint()
                 Blueprint::Factory factory;
                 factory.save( m_pBlueprint, m_pBlueprintEdit->getFilePath() );
                 OnWindowTitleModified( QString::fromUtf8( m_pBlueprintEdit->getFilePath().c_str() ) );
+            }
+            catch( std::exception& ex )
+            {
+                std::ostringstream os;
+                os << "Error saving file: " << m_pBlueprintEdit->getFilePath() << " : " << ex.what();
+                QMessageBox::warning( this, tr( "Blueprint Edittor" ),
+                                      QString::fromUtf8( os.str().c_str() ) );
             }
             catch( ... )
             {
@@ -218,11 +224,65 @@ void BlueprintView::OnSaveAsBlueprint()
             m_pBlueprintEdit->setFilePath( strFilePath.toStdString() );
             OnWindowTitleModified( strFilePath );
         }
+        catch( std::exception& ex )
+        {
+            std::ostringstream os;
+            os << "Error saving file: " << strFilePath.toStdString() << " : " << ex.what();
+            QMessageBox::warning( this, tr( "Blueprint Edittor" ),
+                                  QString::fromUtf8( os.str().c_str() ) );
+        }
         catch( ... )
         {
             QMessageBox::warning( this,
                                   tr( "Blueprint Edittor" ),
                                   "The blueprint failed to save correctly." );
+        }
+    }
+}
+
+void BlueprintView::OnLoadAnalysisFromFile()
+{
+    VERIFY_RTE( m_pQTUI );
+    VERIFY_RTE( m_pBlueprintEdit );
+    
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    QString strDefaultPath = environment.value( "BLUEPRINT_TOOLBOX_PATH" );
+    if( m_pBlueprintEdit && !m_pBlueprintEdit->getFilePath().empty() )
+    {
+        strDefaultPath = QString::fromUtf8( m_pBlueprintEdit->getFilePath().c_str() );
+    }
+    
+    Blueprint::Analysis::Ptr pNewAnalysis;
+    QString strFilePath =
+            QFileDialog::getOpenFileName( this,
+                tr( "Open Analysis" ), 
+                strDefaultPath,
+                tr( "Analysis Files (*.bluc)" ) );
+    if( !strFilePath.isEmpty() )
+    {
+        try
+        {
+            pNewAnalysis = 
+                m_pBlueprintEdit->loadAnalysis( strFilePath.toStdString() );
+        }
+        catch( std::exception& ex )
+        {
+            std::ostringstream os;
+            os << "Error loading file: " << strFilePath.toStdString() << " : " << ex.what();
+            QMessageBox::warning( this, tr( "Blueprint Edittor" ),
+                                  QString::fromUtf8( os.str().c_str() ) );
+        }
+        catch( ... )
+        {
+            QMessageBox::warning( this,
+                                  tr( "Blueprint Edittor" ),
+                                  "Failed to load analysis file." );
+        }
+        if( pNewAnalysis )
+        {
+            m_pAnalysis = pNewAnalysis;
+            m_pAnalysisView.reset( 
+                new AnalysisView( pNewAnalysis, m_pBlueprintScene, m_pToolBox ) );
         }
     }
 }
@@ -473,22 +533,6 @@ void BlueprintView::OnSelectMode_Contour()
     m_toolMode = Blueprint::IEditContext::eContour;
 }
 
-//void BlueprintView::OnSelectMode_Connection()
-//{
-//    ASSERT( m_pActiveTool );
-//    //m_toolMode = Blueprint::IEditContext::eConnection;
-//}
-/*
-void BlueprintView::OnRotateLeft()
-{
-    ASSERT( m_pActiveContext );
-    m_pActiveContext->cmd_rotateLeft( getSelection() );
-    
-    update();
-    invalidateScene();
-    OnBlueprintModified();
-}
-*/
 void BlueprintView::OnRotateRight()
 {
     ASSERT( m_pActiveContext );
@@ -583,17 +627,6 @@ void BlueprintView::OnSelectionChanged( const QItemSelection& selected, const QI
         if( Selectable* pSelectable = selectableFromNode( m_pModel->getIndexNode( *i ) ) )
             pSelectable->setSelected( false );
     }
-}
-
-void BlueprintView::setViewMode( bool bArrangement, bool bCellComplex, bool bClearance )
-{
-    qDebug() << "OnBitmapChanged called: " << bArrangement << " " << bCellComplex << " " << bClearance;
-    
-    m_pBlueprintEdit->setViewMode( bArrangement, bCellComplex, bClearance );
-    
-    update();
-    invalidateScene();
-    OnBlueprintModified();
 }
 
 void BlueprintView::SelectContext( Blueprint::IEditContext* pNewContext )
@@ -802,7 +835,7 @@ Blueprint::IGlyph* BlueprintView::findSelectableTopmostGlyph( const QPointF& pos
 Blueprint::IGlyph::Ptr BlueprintView::createControlPoint( Blueprint::ControlPoint* pControlPoint, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphControlPoint( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_v2ZoomLevel.y(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pControlPoint, m_v2ZoomLevel.y(), m_pToolBox ) );
     CalculateOversizedSceneRect();
     return pNewGlyph;
 }
@@ -810,28 +843,21 @@ Blueprint::IGlyph::Ptr BlueprintView::createControlPoint( Blueprint::ControlPoin
 Blueprint::IGlyph::Ptr BlueprintView::createOrigin( Blueprint::Origin* pOrigin, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphOrigin( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pActiveContext, true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pOrigin, m_pActiveContext, m_pToolBox ) );
     return pNewGlyph;
 }
-/*
-Blueprint::IGlyph::Ptr BlueprintView::createMarkupPath( Blueprint::MarkupPath* pMarkupPath, Blueprint::IGlyph::Ptr pParent )
-{
-    Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPath( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPath, m_v2ZoomLevel.y(), true, m_pToolBox ) );
-    return pNewGlyph;
-}*/
 
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupPolygonGroup( Blueprint::MarkupPolygonGroup* pMarkupPolygonGroup, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphPolygonGroup( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_v2ZoomLevel.y(), true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupPolygonGroup, m_v2ZoomLevel.y(), m_pToolBox ) );
     return pNewGlyph;
 }
 
 Blueprint::IGlyph::Ptr BlueprintView::createMarkupText( Blueprint::MarkupText* pMarkupText, Blueprint::IGlyph::Ptr pParent )
 {
     Blueprint::IGlyph::Ptr pNewGlyph( new GlyphText( pParent, m_pBlueprintScene, 
-        GlyphMap( m_itemMap, m_specMap ), pMarkupText, true, m_pToolBox ) );
+        GlyphMap( m_itemMap, m_specMap ), pMarkupText, m_pToolBox ) );
     return pNewGlyph;
 }
 
@@ -1221,11 +1247,70 @@ void BlueprintView::drawBackground(QPainter *painter, const QRectF &rect)
 
 
 
+void BlueprintView::updateViewMode()
+{
+    m_pBlueprintEdit->setViewMode( showArrangement(), false, false );
+    
+    if( showSites() )
+    {
+        showAllGlyphItems();
+    }
+    else
+    {
+        hideAllGlyphItems();
+    }
+    
+    if( m_pAnalysisView )
+    {
+        m_pAnalysisView->setVisible( showCells() );
+    }
+    
+    update();
+    invalidateScene();
+    OnBlueprintModified();
+}
 
+bool BlueprintView::showSites()
+{
+    VERIFY_RTE( m_pQTUI );
+    
+    return m_pQTUI->actionMode_Site->isChecked();
+}
 
+bool BlueprintView::showArrangement()
+{
+    VERIFY_RTE( m_pQTUI );
+    
+    return m_pQTUI->actionMode_Arrangement->isChecked();
+}
 
+bool BlueprintView::showCells()
+{
+    VERIFY_RTE( m_pQTUI );
+    return m_pQTUI->actionMode_CellComplex->isChecked();
+}
 
+void BlueprintView::hideAllGlyphItems()
+{
+    for( auto i : m_itemMap )
+    {
+        if( Renderable* pRenderable = dynamic_cast< Renderable* >( i.second ) )
+        {
+            pRenderable->setShouldRender( false );
+        }
+    }
+}
 
+void BlueprintView::showAllGlyphItems()
+{
+    for( auto i : m_itemMap )
+    {
+        if( Renderable* pRenderable = dynamic_cast< Renderable* >( i.second ) )
+        {
+            pRenderable->setShouldRender( true );
+        }
+    }
+}
 
 
 

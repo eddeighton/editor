@@ -905,6 +905,7 @@ void BlueprintView::mousePressEvent(QMouseEvent *event)
         m_pActiveTool->mousePressEvent( event );
         OnBlueprintModified();
         
+        /*
         if( Blueprint::Site::Ptr pInteractionSite = m_pActiveTool->GetInteractionSite() )
         {
             if( !m_pActiveContext->isSiteContext( pInteractionSite ) )
@@ -915,7 +916,7 @@ void BlueprintView::mousePressEvent(QMouseEvent *event)
                     SelectContext( pNewContext );
                 }
             }
-        }
+        }*/
     }
     else if( event->button() == Qt::MiddleButton )
     {
